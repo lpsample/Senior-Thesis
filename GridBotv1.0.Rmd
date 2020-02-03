@@ -1,0 +1,733 @@
+---
+title: "GridBot Model"
+output: html_notebook
+---
+#GridBot
+##Lindsey Sample and Josh DeLeew, 2019
+
+Grid world:
+A matrix of rows and colums, each square has a light value, can be occupied by an agent, and can have an obstacle
+2 layers of matrix: light and obstacle + agent
+light: 0 = dark, 255= max light (or 0-1)
+
+light scaline function: 255*exp(-distance*.5)
+falls off, if we multiply d by a number less than one, drops off slower
+more than 1, drops off faster
+
+Here, we make our light grid and obstacle grid.
+If 1 is entered, it will make a static environment. If 2, dynamic
+Dynamic picks a row and column number that = 100 total squares and places 5 random obstacles
+
+```{r}
+makeLightGrid<- function(numRows, numCols){
+  lightGrid<- matrix(NA, numRows, numCols)
+  for(x in 1:numCols){
+    for(y in 1:numRows){
+      #puts in middle of grid
+      distance <- sqrt((0-y)^2+((numCols+1)/2-x)^2)
+      lightGrid[y,x] <- round(255*exp(-distance*.5))
+    }
+  }
+  return (lightGrid)
+}
+
+#takes in 1 or 2 (static or dynamic)
+makeGrids<- function(x){
+  if (x == 1){
+    numRows <- 10
+    numCols <- 10
+  }
+  
+  if (x==2){
+    d<- dynamicNums()
+  numRows <- d[1]
+  numCols <- d[2]
+  }
+  
+  lightGrid<- makeLightGrid(numRows, numCols)
+  obsGrid<- matrix(NA, numRows, numCols)
+  obsGrid[1,]<- 1
+  obsGrid[,1]<- 1
+  obsGrid[numRows,]<- 1
+  obsGrid[,numCols] <-1
+  
+  
+  if( x==1){
+    obsGrid[round(numRows/2), round(numCols/2)]<- 1
+    obsGrid[round(numRows/2)+1, round(numCols/2)]<- 1
+    obsGrid[round(numRows/2), round(numCols/2)+1]<- 1
+    obsGrid[round(numRows/2)-1, round(numCols/2)]<- 1
+    obsGrid[round(numRows/2), round(numCols/2)-1]<- 1
+
+  } 
+  if (x==2){
+    #placing 5 obstacles randomly
+    for(i in 1:6){
+    r<- sample(numRows-1, 1)
+    c<- sample(numCols-1, 1)
+    obsGrid[r, c]<- 1
+    }
+  }
+    
+    
+    obsGrid[numRows-1, round(numCols/2)]<- 0
+    return(list(obsGrid, lightGrid))
+  
+}
+#gets random numbers that make a 100 square grid
+dynamicNums<-function(){
+  #cant have 100x1 and 2x50, no obstacle options
+  listy<- list( c(20,5), c(5, 20), c(10,10), c(4, 25), c(25, 4))
+  listNums<- (sample(listy, 1))
+  pairNums<- listNums[[1]]
+  nRows<- pairNums[[1]]
+  nCols <- pairNums[[2]]
+  return (c(nRows, nCols))
+}
+
+```
+
+Agent traverses block matrix
+blank indicates no block
+1 indicates block
+0 = agent is in this spot
+agent cannot be on a block
+
+
+functions:
+(determined by NN)
+turn in place to left, turn to right, step forward, step backward
+
+move:
+takes state as argument
+changes grid or cardinal so agent is in new spot
+return new grid
+
+moveForward: moves in the direction bot is facing one space forward
+
+cardinal: an ordered pair that designates next move
+y, x
+(rows, col)
+(1,0) -> down
+(0, 1) -> right
+(-1,0) -> up
+(0, -1) -> left
+```{r}
+moveForward <-function(state){
+  cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  
+  aCur<- which(obsGrid==0, arr.ind=TRUE)
+  if(is.na(obsGrid[aCur+cardinal])){
+    obsGrid[aCur]<- NA
+    obsGrid[aCur+cardinal]<- 0
+  }
+  state[[2]] <- obsGrid
+  return(state)
+}
+moveBackward <-function(state){
+  cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  aCur<- which(obsGrid==0, arr.ind=TRUE)
+  if(is.na(obsGrid[aCur-cardinal])){
+    obsGrid[aCur]<- NA
+    obsGrid[aCur-cardinal]<- 0
+  }
+  state[[2]] <- obsGrid
+   return(state)
+}
+
+turnClock <- function(state){
+  cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  #if down, turn left
+  if(all(cardinal == c(1,0))){
+    cardinal <- c(0,-1)
+  }
+  #if left, turn up
+  else if(all(cardinal == c(0,-1))){
+    cardinal <- c(-1,0)
+  }
+  #if up, turn right
+  else if(all(cardinal == c(-1,0))){
+    cardinal <- c(0,1)
+  }
+   #if right, turn down
+  else if(all(cardinal == c(0,1))){
+    cardinal <- c(1,0)
+  }
+  state[[1]] <- cardinal
+  return(state)
+}
+turnCounter <- function(state){
+  cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  #if left, turn down
+  if(all(cardinal == c(0,-1))){
+    cardinal <- c(1,0)
+  }
+  #if up turn left
+  else if(all(cardinal == c(-1,0))){
+    cardinal <- c(0,-1)
+  }
+  #if right, turn up
+  else if(all(cardinal == c(0,1))){
+    cardinal <- c(-1,0)
+  }
+   #if down, turn right
+  else if(all(cardinal == c(1,0))){
+    cardinal <- c(0,1)
+  }
+  state[[1]] <- cardinal
+  return(state)
+}
+
+```
+
+#light function
+get light takes in obsGrid, finds the position of the bot (aCur)
+based on the cardinal, it takes the average of the space its in, the space in front, and the two to the right and left for the right and left sensors respectively. The sum of r and l is the number added to the accumulator
+
+! [LDR] (LDR.jpg)
+
+
+```{r}
+down <- c(1,0)
+right<- c(0, 1)
+up<- c(-1,0)
+left<- c(0, -1)
+
+rightLight<- 0
+leftLight<- 0
+
+getRightLight<- function(state){
+  cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  lightGrid <-state[[3]]
+  
+  aCur<- which(obsGrid==0, arr.ind=TRUE)
+  #up
+  if(all(cardinal== up)){
+    rightLight<- mean(lightGrid[aCur], lightGrid[aCur+cardinal], lightGrid[aCur+right], lightGrid[aCur+up+right])
+       }
+  
+  #right
+  else if(all(cardinal== right)){
+      rightLight<- mean(lightGrid[aCur], lightGrid[aCur+cardinal], lightGrid[aCur+up], lightGrid[aCur+up+right])
+       }
+  #left
+    else if(all(cardinal== left)){
+    rightLight<- mean(lightGrid[aCur], lightGrid[aCur+cardinal], lightGrid[aCur+up], lightGrid[aCur+up+left])
+      }
+  #down
+    else if(all(cardinal== down)){
+    rightLight<- mean(lightGrid[aCur], lightGrid[aCur+cardinal], lightGrid[aCur+right], lightGrid[aCur+down+right])
+     }
+  
+ 
+  
+  return(rightLight)
+}
+
+getLeftLight<- function(state){
+  cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  lightGrid <-state[[3]]
+  
+  aCur<- which(obsGrid==0, arr.ind=TRUE)
+  #up
+  if(all(cardinal== up)){
+  leftLight<- mean(lightGrid[aCur], lightGrid[aCur+cardinal], lightGrid[aCur+left], lightGrid[aCur+up+left])
+  }
+  
+  #right
+  else if(all(cardinal== right)){
+     leftLight<- mean(lightGrid[aCur], lightGrid[aCur+cardinal], lightGrid[aCur+down], lightGrid[aCur+down+right])
+  }
+  #left
+    else if(all(cardinal== left)){
+leftLight<- mean(lightGrid[aCur], lightGrid[aCur+cardinal], lightGrid[aCur+down], lightGrid[aCur+down+left])
+    }
+  #down
+    else if(all(cardinal== down)){
+   leftLight<- mean(lightGrid[aCur], lightGrid[aCur+cardinal], lightGrid[aCur+left], lightGrid[aCur+down+left])
+  }
+  
+  return(leftLight)
+}
+
+
+```
+
+###IRs
+returns the distance of the closest block
+
+```{r}
+leftIR<- 0
+rightIR<-0
+
+getRightIR<- function(state){
+    cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  lightGrid <-state[[3]]
+  aCur<- which(obsGrid==0, arr.ind=TRUE)
+  #up
+  #checks for both Right  IR, they include the two spaces in front, sets to distance between,
+  # first checks before, then to right, then up up, then up up right
+  #else if because we check in order
+  
+  
+  #up direction
+  if(all(cardinal== up)){ 
+    #if item in spot 1 (up), IR = distance
+    if(!is.na(obsGrid[aCur+up])){
+      rightIR <- dist(rbind(aCur, aCur + up))[1]
+      #if item in spot 2 (right), IR = distance
+    } else if (!is.na(obsGrid[aCur+up+right])){
+      rightIR <- dist(rbind(aCur, aCur + up + right))[1]
+      #if item in spot 3, IR= distance
+    } else if (!is.na(obsGrid[aCur+up+up])){
+      rightIR <- dist(rbind(aCur, aCur + up + up))[1]
+      #if item in spot 4, IR = distance
+    } else if (!is.na(obsGrid[aCur+up+up+right])){
+      rightIR <- dist(rbind(aCur, aCur + up + up + right))[1]
+    }}
+  #down direction
+  if (all(cardinal == down)){
+    #spot 1
+    if(!is.na(obsGrid[aCur+down])){
+         rightIR <- dist(rbind(aCur, aCur + down))[1]
+         #spot 2
+    } else if (!is.na(obsGrid[aCur+down+right])){
+       rightIR <- dist(rbind(aCur, aCur + down + right))[1]
+       #spot 3
+    } else if (!is.na(obsGrid[aCur+down+down])){
+    rightIR <- dist(rbind(aCur, aCur + down + down))[1]
+    #spot 4
+    } else if (!is.na(obsGrid[aCur+down+down+right])){
+      rightIR <- dist(rbind(aCur, aCur + down + down + right))[1]
+    }
+  }
+  
+  #right direction
+  if (all(cardinal == right)){
+    #spot 1
+    if(!is.na(obsGrid[aCur+right])){
+        rightIR <- dist(rbind(aCur, aCur + right))[1]
+         #spot 2
+    } else if (!is.na(obsGrid[aCur+down+right])){
+       rightIR <- dist(rbind(aCur, aCur + down + right))[1]
+       #spot 3
+    } else if (!is.na(obsGrid[aCur+right+right])){
+    rightIR <- dist(rbind(aCur, aCur + right + right))[1]
+    #spot 4
+    } else if (!is.na(obsGrid[aCur+down+right+right])){
+      rightIR <- dist(rbind(aCur, aCur + down + right + right))[1]
+    }
+  }
+  
+  if (all(cardinal == left)){
+    #spot 1
+    if(!is.na(obsGrid[aCur+left])){
+         rightIR <- dist(rbind(aCur, aCur + left))[1]
+         #spot 2
+    } else if (!is.na(obsGrid[aCur+up+left])){
+       rightIR <- dist(rbind(aCur, aCur + up + left))[1]
+       #spot 3
+    } else if (!is.na(obsGrid[aCur+left+left])){
+    rightIR <- dist(rbind(aCur, aCur + left + left))[1]
+    #spot 4
+    } else if (!is.na(obsGrid[aCur+up+left+left])){
+      rightIR <- dist(rbind(aCur, aCur + up + left + left))[1]
+    }
+  }
+  
+  return (abs(rightIR))
+}
+    
+    
+getLeftIR<- function(state){
+    cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  lightGrid <-state[[3]]
+  
+  aCur<- which(obsGrid==0, arr.ind=TRUE)
+  if(all(cardinal== up)){ 
+    #if item in spot 1 (up), IR = distance
+    if(!is.na(obsGrid[aCur+up])){
+      leftIR <- dist(rbind(aCur, aCur + up))[1]
+      #if item in spot 2 (left), IR = distance
+    } else if (!is.na(obsGrid[aCur+up+left])){
+      leftIR <- dist(rbind(aCur, aCur + up + left))[1]
+      #if item in spot 3, IR= distance
+    } else if (!is.na(obsGrid[aCur+up+up])){
+     leftIR <- dist(rbind(aCur, aCur + up + up))[1]
+      #if item in spot 4, IR = distance
+    } else if (!is.na(obsGrid[aCur+up+up+left])){
+      leftIR <- dist(rbind(aCur, aCur + up + up + left))[1]
+    }}
+   if (all(cardinal == down)){
+    #spot 1
+    if(!is.na(obsGrid[aCur+down])){
+         leftIR <- dist(rbind(aCur, aCur + down))[1]
+         #spot 2
+    } else if (!is.na(obsGrid[aCur+down+left])){
+       leftIR <- dist(rbind(aCur, aCur + down + left))[1]
+       #spot 3
+    } else if (!is.na(obsGrid[aCur+down+down])){
+    leftIR <- dist(rbind(aCur, aCur + down + down))[1]
+    #spot 4
+    } else if (!is.na(obsGrid[aCur+down+down+left])){
+      leftIR <- dist(rbind(aCur, aCur + down + down + left))[1]
+    }
+   }
+  #right
+  if (all(cardinal == right)){
+    #spot 1
+    if(!is.na(obsGrid[aCur+right])){
+         leftIR <- dist(rbind(aCur, aCur + right))[1]
+         #spot 2
+    } else if (!is.na(obsGrid[aCur+up+right])){
+       leftIR <- dist(rbind(aCur, aCur + right))[1]
+       #spot 3
+    } else if (!is.na(obsGrid[aCur+right+right])){
+    leftIR <- dist(rbind(aCur, aCur + right + right))[1]
+    #spot 4
+    } else if (!is.na(obsGrid[aCur+up+right+right])){
+      leftIR <- dist(rbind(aCur, aCur + up + right + right))[1]
+    }
+  }
+
+     if (all(cardinal == left)){
+    #spot 1
+    if(!is.na(obsGrid[aCur+left])){
+        leftIR <- dist(rbind(aCur, aCur + left))[1]
+         #spot 2
+    } else if (!is.na(obsGrid[aCur+down+left])){
+       leftIR <- dist(rbind(aCur, aCur + down + left))[1]
+       #spot 3
+    } else if (!is.na(obsGrid[aCur+left+left])){
+   leftIR <- dist(rbind(aCur, aCur + left + left))[1]
+    #spot 4
+    } else if (!is.na(obsGrid[aCur+down+left+left])){
+      leftIR <- dist(rbind(aCur, aCur + down + left + left))[1]
+    }
+  }   
+ 
+  return(abs(leftIR))
+}
+  
+```
+###Bumper
+returns 1 if there is an object in front of the bot (depends on where it is facing)
+```{r}
+bump <- 0
+getBump<- function(state){
+      cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  lightGrid <-state[[3]]
+  
+  aCur<- which(obsGrid==0, arr.ind=TRUE)
+  if(is.na(obsGrid[aCur+cardinal])){
+    bump<-0
+  }
+  else if(!is.na(obsGrid[aCur+cardinal])){
+    bump<-1
+  }
+  
+
+  return(bump)
+}
+```
+
+
+###Update sensors
+```{r}
+updateInput<- function(state){
+    leftIR<- getLeftIR(state)
+    rightIR<- getRightIR(state)
+    leftLight<- getLeftLight(state)
+    rightLight<- getRightLight(state)
+    bump<- getBump(state)
+    
+    input<- c(leftLight,leftIR, bump, rightIR, rightLight) 
+    return(input)
+}
+
+```
+
+###MakeMove
+```{r}
+makeMove<- function(weights, state){
+  cardinal <- state[[1]]
+  obsGrid <- state[[2]]
+  lightGrid <-state[[3]]
+  
+  input<- updateInput(state)
+  
+  output<- c(0,0,0,0)
+  #weights<- matrix(NA,length(input), length(output))
+  
+  #matrix and input vector, matrix multiplication (dot product of every column)
+  #OR for loop, dot product (sum, vector * vector)
+  
+  #print(weights)
+  
+  for (i in 1:length(output)){
+      output[i]<- 1 / (1 + exp(-sum(input*weights[,i])))
+    
+  }
+  sum.output<- sum(output)
+  adj.output <- output/sum.output
+  
+  action <- sample(c(moveForward,moveBackward, turnClock, turnCounter),1,  prob=adj.output)
+  new.state <- action[[1]](state)
+  
+  state <- new.state
+
+  return(new.state)
+}
+
+
+```
+###Making weights and setting up
+```{r}
+makeRandWeights <- function(){
+  output<- c(moveForward, moveBackward, turnClock, turnCounter)
+  weight.options<- c(-1, -.5, 0, .5, 1)
+  weights<- matrix(NA,5, length(output))
+  for (row in 1:nrow(weights)){
+    for (col in 1:ncol(weights)){
+    weights[row,col] <- sample(weight.options, 1)
+    }
+  }
+  return (weights)
+}
+
+
+setUp<- function(x){
+  grids<- makeGrids(x)
+  obsGrid <- grids[[1]]
+  lightGrid <- grids[[2]]
+  state <- list(
+    cardinal = c(-1,0),
+    obsGrid,
+    lightGrid
+  )
+  #weights <- makeRandWeights()
+  return(state)
+}
+
+# t<-setUp(2)
+# 
+# test1.state <- setUp(2)
+# weights <- makeRandWeights()
+# for(i in 1:100){
+#   test1.state <- makeMove(weights,test1.state)
+# }
+
+
+```
+
+
+
+
+
+upate sensor vals
+
+```{r}
+N.moves <-100
+N.bots <- 10
+N.gen <- 100
+
+#runs bots with 100 moves
+runBot <- function(weights, x){
+
+  # make a starting environment / state
+  state <- setUp(x)
+  total.light <- 0
+  for(i in 1:N.moves){
+    state <- makeMove(weights, state)
+    total.light <- total.light + getLeftLight(state) + getRightLight(state)
+  }
+  
+  return(total.light)
+}
+
+#runBot(makeRandWeights(), 2)
+  
+runGeneration <- function(genomes, x) {
+  fitness.vals <- data.frame(bot.number=1:10, fitness=rep(0,10))
+  for(i in 1:N.bots){
+   #print(genomes[[i]])
+    #print(i)
+    fitness <- runBot(genomes[[i]], x)
+    fitness.vals[i, 'fitness'] <- fitness
+   
+    }
+  return(fitness.vals)
+  # runBot for each genome in the data frame
+}
+
+
+createGeneration <- function(N.bots){
+  genomes <- list()
+  for(i in 1:N.bots){
+    #setUp(10,10)
+    genomes[[i]] <- makeRandWeights()    
+  }
+  return(genomes)
+}
+
+# test1.state <- setUp(10, 10)
+# weights <- makeRandWeights()
+# for(i in 1:100){
+#   test1.state <- makeMove(weights,test1.state)
+# }
+
+
+
+
+
+#takes in what runGeneration returns
+next.genomes<- function(old.gen, old.genomes){
+  
+  next.generation <- sample(old.gen$bot.number, 10, replace=T, prob = old.gen$fitness)
+  #next.generation <- c(1,1,1,1,4,5,6,3,3,4)
+  
+  next.bots.genomes<- old.genomes
+  
+  for (i in 1:length(next.generation)) {
+    #print(i)
+    bot<- next.generation[[i]]
+    next.bots.genomes[i] <- old.genomes[bot]
+  }
+  #next.bots.genomes <- old.genomes[next.generation]
+  return(next.bots.genomes)
+}
+
+#r<-nrow(weights)
+  
+# r<- as.numeric(sample(r, 1))
+
+
+  w<-makeRandWeights()
+  weight.options<- c(-1, -.5, 0, .5, 1)
+ w[1, 1] <- as.numeric(sample(weight.options, 1))
+ w
+
+mutate <- function(weights){
+ 
+   
+  new.weights <- weights
+  
+  weight.options<- c(-1, -.5, 0, .5, 1)
+  #i<- sample(length(weights), 1)
+  #dim(weights)
+  
+  r<-as.numeric(nrow(weights))
+  c<-as.numeric(ncol(weights))
+  
+  r.m<- as.numeric(sample(r, 1))
+  c.m<- as.numeric(sample(c, 1))
+
+  #print(new.weights)
+  #print(new.weights[r.m, c.m])
+  new.weights[r.m, c.m] <- as.numeric(sample(weight.options, 1))
+  
+  #print(new.weights)
+  return(new.weights)
+}
+
+  
+  #new.weights <- rnorm(length(weights), mean=weights, sd=0.05)
+  #10% mutation, change weights
+
+#skip that do a loop change one
+
+#for loop, 1 to total gens, does all steps
+
+#mutates genomes
+# for (i in 1:length(next.bots)){
+#    next.bots[[i]] <- mutate(next.bots[[i]])
+# }
+
+
+```
+
+```{r}
+N.moves <-100
+N.bots <- 10
+N.gen <- 100
+
+
+bots <- createGeneration(10)
+genomes<- makeRandWeights()
+old.gen <- runGeneration(bots, 1)
+b<-next.genomes(old.gen, genomes)
+mutate(b)
+
+run<- function(x){
+  #x<-1
+  genomes<- createGeneration(N.bots)
+  gen<- runGeneration(genomes, x)
+  
+  for (a in 2:N.gen) {
+   print(a)
+    genomes<- next.genomes(gen, genomes)
+     for (i in 1:length(genomes)) {
+       #print(genomes[i])
+       #i<-1
+      genomes[[i]]<- mutate(genomes[[i]])
+      #print(genomes[i])
+    }
+    gen <- runGeneration(genomes, x)
+ 
+  
+  }
+  
+  
+  top.scorer <- as.numeric(which.max(gen$fitness))
+  final.weights<-genomes[[top.scorer]]
+  return(final.weights)
+}
+
+
+
+static.run<- run(1)
+dynamic.run<- run(2)
+
+
+```
+
+
+
+Citation:
+Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.3.7. http://cran.r-project.org/web/packages/NeuralNetTools/
+
+
+
+Next steps:
+  run agent through grid world
+  agent that makes random decisions
+  assign score to them about how well they do
+  fitness component
+  genetic alogrythm to evolve control structures
+  
+  
+  Four actions: turn turn up back
+  make next decision: randomly chooses one of the 4
+  sample with replacement
+  call function for action picked using if statement
+  put in a loop, do x amount of times
+  all bots in dataframe
+  
+  fitness score for each in dataframe
+  
+  
+  
+  
+  proof of concept of evolution working: demo of modeling approach
+  paper can imagine what you can learn from model hypothetically 
+  
+  
