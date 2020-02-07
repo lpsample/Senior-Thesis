@@ -541,6 +541,7 @@ N.bots <- 10
 N.gen <- 100
 
 #runs bots with 100 moves
+
 runBot <- function(weights, x){
 
   # make a starting environment / state
@@ -694,16 +695,11 @@ run<- function(x){
 
 
 
-static.run<- run(1)
-dynamic.run<- run(2)
+#static.run<- run(1)
+#dynamic.run<- run(2)
 
 
 ```
-
-
-
-Citation:
-Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.3.7. http://cran.r-project.org/web/packages/NeuralNetTools/
 
 
 
