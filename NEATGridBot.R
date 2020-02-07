@@ -30,34 +30,60 @@ dynamic.run<- run(2)
 
 # Initial State (1 or 2 is static or dynamic, going to start with static): Initial genomes
 # STATE IN THIS VERSION IS WEIGHTS!!! EACH GEN CHANGES
-gridBot.InitialState <- function(){
-  genomes<- createGeneration(N.bots)
-  gen<- runGeneration(genomes, x)
-  return(gen)
+gridBot.InitialState <- function(x){
+  grids<- makeGrids(x)
+  obsGrid <- grids[[1]]
+  lightGrid <- grids[[2]]
+  state <- list(
+    cardinal = c(-1,0),
+    obsGrid,
+    lightGrid
+  )
+  #weights <- makeRandWeights()
+  return(state)
 }
 
+
 #Convert to NN Inputs
-gridBot.ConvertStateToNeuralNetInputs <- function(currentGen){
-  return (currentGen)
+gridBot.ConvertStateToNeuralNetInputs <- function(currentState){
+  leftIR<- getLeftIR(currentState)
+  rightIR<- getRightIR(currentState)
+  leftLight<- getLeftLight(currentState)
+  rightLight<- getRightLight(currentState)
+  bump<- getBump(currentState)
+  
+  neuralNetInputs<- c(leftLight,leftIR, bump, rightIR, rightLight) 
+  
+  
+  return (neuralNetInputs)
 }
 
 #Update State: Takes data of gen's run in Grid, Gives next Genome
 gridBot.UpdateState <- function(currentState,neuralNetOutputs){
+  sum.output<- sum(neuralNetOutputs)
+  adj.output <- neuralNetOutputs/sum.output
   
+  action <- sample(c(moveForward,moveBackward, turnClock, turnCounter),1,  prob=adj.output)
+  new.state <- action[[1]](currentState)
   
-  return (currentState)
+  return (new.state)
 }
 
 #Update Fitness
 gridBot.UpdateFitness <- function(oldState,updatedState,oldFitness){
-  return (oldFitness+(heightFitness + heightFitness*centerFitness))
+  #should this be oldState or updated
+  total.light <- oldFitness + getLeftLight(oldState) + getRightLight(oldState)
+  return (total.light)
 }
 
 #Termination (True or False)
 gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitness,newFitness){
-
-  return(FALSE)  
-
+  if(frameNum< N.moves){
+  return(FALSE) 
+  } else {
+      return(TRUE)
+    }
+}
   
   #Plot
   poleBalance.PlotState <-function(updatedState){
