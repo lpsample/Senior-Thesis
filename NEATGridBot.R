@@ -1,8 +1,8 @@
 #Create Grid and GridBot
-
+library(ggplot2)
 #Parameters to control the simulation
 simulation.timestep = 0.005
-simulation.numoftimesteps = 2000
+simulation.numoftimesteps = 100
 N.moves <-100
 N.bots <- 10
 N.gen <- 100
@@ -39,10 +39,17 @@ gridBot.ConvertStateToNeuralNetInputs <- function(currentState){
 
 #Update State: Takes data of gen's run in Grid, Gives next Genome
 gridBot.UpdateState <- function(currentState,neuralNetOutputs){
-  sum.output<- sum(unlist(neuralNetOutputs))
-  adj.output <- unlist(neuralNetOutputs)/sum.output
+  nn.vector <- unlist(neuralNetOutputs)
+  sum.output<- sum(nn.vector)
+  if(sum.output != 0){
+    adj.output <- nn.vector/sum.output
+  } else {
+    adj.output <- rep(0.25,4)
+  }
   
-  action <- sample(c(moveForward,moveBackward, turnClock, turnCounter),1,  prob=adj.output)
+  
+  action <- sample(c(moveForward,moveBackward, turnClock, turnCounter),1, prob = adj.output)
+  #need to add prob = adj.output back in, it was having errors
   new.state <- action[[1]](currentState)
   
   return (new.state)
@@ -66,7 +73,22 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   
   #Plot
   gridBot.PlotState <-function(updatedState){
-    updatedState[[2]]
+    gridVisPlot<-updatedState[[2]]
+    df<- as.data.frame(which(gridVisPlot == 1, arr.ind = T))
+    df$type <- 1
+    df2<- as.data.frame(which(gridVisPlot == 0, arr.ind = T))
+    df2$type <- 0
+    df.all<- rbind(df, df2)
+    df.all$type <- factor(df.all$type)
+    ggplot(df.all, aes(x=col, y=row, shape = type))+
+      scale_shape_manual(values = c(21,22), guide=F)+
+      geom_point(size=5)+
+      scale_y_reverse()+
+      theme_minimal()+
+      theme(axis.text = element_blank(),
+            panel.grid=element_blank(),
+            axis.title= element_blank())
+    #google r shapes
     }
   
  #Run
@@ -78,11 +100,26 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
                                gridBot.CheckForTermination,
                                gridBot.PlotState)
   
-  nMax <- 2 #Number of generations to run
+  nMax <- 100 #Number of generations to run
   for(i in seq(1,nMax)){
-    gridBotSimulation <- NEATSimulation.RunSingleGeneration(gridBot)
+    gridBot <- NEATSimulation.RunSingleGeneration(gridBot)
     #poleSimulation <- NEATSimulation.RunSingleGeneration(poleSimulation,T,"videos",
     #                                            "poleBalance",1/simulation.timestep)
   }
   
   
+
+#drawGenotypeNEAT(gridBot, config, 100,100)
+  
+library(igraph)
+  
+drawGenotypeNEAT.genome(gridBot$Pool$currentGenome,config,topLeftX=0,topLeftY=0)
+drawPhenotypeNEAT.genome(gridBot$Pool$currentGenome,config,topLeftX,topLeftY) #what are topLeft X and Y
+createGraph(gridBot$Pool$currentGenome,config)
+drawNEAT.genome(gridBot$Pool$currentGenome,config)
+
+drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
+
+drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
+
+gridBot$PerformanceTracker

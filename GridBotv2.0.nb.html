@@ -2361,13 +2361,13 @@ next.genomes&lt;- function(old.gen, old.genomes){
  w[1, 1] &lt;- as.numeric(sample(weight.options, 1))
  w</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAwLjAgLTAuNSAgMC41ICAxLjBcblsyLF0gLTAuNSAtMC41ICAwLjUgIDAuNVxuWzMsXSAgMC4wIC0wLjUgIDAuNSAtMS4wXG5bNCxdICAwLjAgIDAuMCAgMC4wICAwLjVcbls1LF0gLTAuNSAgMC41ICAxLjAgLTAuNVxuIn0= -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdIC0xLjAgIDAuMCAtMC41ICAwLjVcblsyLF0gLTAuNSAtMS4wIC0wLjUgLTAuNVxuWzMsXSAtMC41ICAwLjUgIDAuMCAgMC41XG5bNCxdICAwLjUgLTAuNSAgMC4wICAwLjBcbls1LF0gIDAuNSAtMS4wIC0xLjAgLTAuNVxuIn0= -->
 <pre><code>     [,1] [,2] [,3] [,4]
-[1,]  0.0 -0.5  0.5  1.0
-[2,] -0.5 -0.5  0.5  0.5
-[3,]  0.0 -0.5  0.5 -1.0
-[4,]  0.0  0.0  0.0  0.5
-[5,] -0.5  0.5  1.0 -0.5</code></pre>
+[1,] -1.0  0.0 -0.5  0.5
+[2,] -0.5 -1.0 -0.5 -0.5
+[3,] -0.5  0.5  0.0  0.5
+[4,]  0.5 -0.5  0.0  0.0
+[5,]  0.5 -1.0 -1.0 -0.5</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXV0YXRlIDwtIGZ1bmN0aW9uKHdlaWdodHMpe1xuIFxuICAgXG4gIG5ldy53ZWlnaHRzIDwtIHdlaWdodHNcbiAgXG4gIHdlaWdodC5vcHRpb25zPC0gYygtMSwgLS41LCAwLCAuNSwgMSlcbiAgI2k8LSBzYW1wbGUobGVuZ3RoKHdlaWdodHMpLCAxKVxuICAjZGltKHdlaWdodHMpXG4gIFxuICByPC1hcy5udW1lcmljKG5yb3cod2VpZ2h0cykpXG4gIGM8LWFzLm51bWVyaWMobmNvbCh3ZWlnaHRzKSlcbiAgXG4gIHIubTwtIGFzLm51bWVyaWMoc2FtcGxlKHIsIDEpKVxuICBjLm08LSBhcy5udW1lcmljKHNhbXBsZShjLCAxKSlcblxuICAjcHJpbnQobmV3LndlaWdodHMpXG4gICNwcmludChuZXcud2VpZ2h0c1tyLm0sIGMubV0pXG4gIG5ldy53ZWlnaHRzW3IubSwgYy5tXSA8LSBhcy5udW1lcmljKHNhbXBsZSh3ZWlnaHQub3B0aW9ucywgMSkpXG4gIFxuICAjcHJpbnQobmV3LndlaWdodHMpXG4gIHJldHVybihuZXcud2VpZ2h0cylcbn1cblxuICBcbiAgI25ldy53ZWlnaHRzIDwtIHJub3JtKGxlbmd0aCh3ZWlnaHRzKSwgbWVhbj13ZWlnaHRzLCBzZD0wLjA1KVxuICAjMTAlIG11dGF0aW9uLCBjaGFuZ2Ugd2VpZ2h0c1xuXG4jc2tpcCB0aGF0IGRvIGEgbG9vcCBjaGFuZ2Ugb25lXG5cbiNmb3IgbG9vcCwgMSB0byB0b3RhbCBnZW5zLCBkb2VzIGFsbCBzdGVwc1xuXG4jbXV0YXRlcyBnZW5vbWVzXG4jIGZvciAoaSBpbiAxOmxlbmd0aChuZXh0LmJvdHMpKXtcbiMgICAgbmV4dC5ib3RzW1tpXV0gPC0gbXV0YXRlKG5leHQuYm90c1tbaV1dKVxuIyB9XG5cblxuYGBgIn0= -->
 <pre class="r"><code>mutate &lt;- function(weights){
@@ -2423,13 +2423,13 @@ old.gen &lt;- runGeneration(bots, 1)
 b&lt;-next.genomes(old.gen, genomes)
 mutate(b)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAwLjUgIDEuMCAgMC41ICAxLjBcblsyLF0gIDAuNSAgMC41IC0wLjUgIDAuNVxuWzMsXSAgMC41IC0wLjUgLTEuMCAgMS4wXG5bNCxdICAwLjUgIDEuMCAgMC4wICAwLjVcbls1LF0gIDAuNSAtMC41IC0xLjAgIDAuMFxuIn0= -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAwLjUgICAtMSAgICAwIC0xLjBcblsyLF0gIDAuMCAgIC0xICAgLTEgIDAuNVxuWzMsXSAtMS4wICAgLTEgICAgMSAgMC41XG5bNCxdIC0xLjAgICAtMSAgICAxIC0wLjVcbls1LF0gIDAuNSAgIC0xICAgIDAgIDAuNVxuIn0= -->
 <pre><code>     [,1] [,2] [,3] [,4]
-[1,]  0.5  1.0  0.5  1.0
-[2,]  0.5  0.5 -0.5  0.5
-[3,]  0.5 -0.5 -1.0  1.0
-[4,]  0.5  1.0  0.0  0.5
-[5,]  0.5 -0.5 -1.0  0.0</code></pre>
+[1,]  0.5   -1    0 -1.0
+[2,]  0.0   -1   -1  0.5
+[3,] -1.0   -1    1  0.5
+[4,] -1.0   -1    1 -0.5
+[5,]  0.5   -1    0  0.5</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucnVuPC0gZnVuY3Rpb24oeCl7XG4gICN4PC0xXG4gIGdlbm9tZXM8LSBjcmVhdGVHZW5lcmF0aW9uKE4uYm90cylcbiAgZ2VuPC0gcnVuR2VuZXJhdGlvbihnZW5vbWVzLCB4KVxuICBcbiAgZm9yIChhIGluIDI6Ti5nZW4pIHtcbiAgIHByaW50KGEpXG4gICAgZ2Vub21lczwtIG5leHQuZ2Vub21lcyhnZW4sIGdlbm9tZXMpXG4gICAgIGZvciAoaSBpbiAxOmxlbmd0aChnZW5vbWVzKSkge1xuICAgICAgICNwcmludChnZW5vbWVzW2ldKVxuICAgICAgICNpPC0xXG4gICAgICBnZW5vbWVzW1tpXV08LSBtdXRhdGUoZ2Vub21lc1tbaV1dKVxuICAgICAgI3ByaW50KGdlbm9tZXNbaV0pXG4gICAgfVxuICAgIGdlbiA8LSBydW5HZW5lcmF0aW9uKGdlbm9tZXMsIHgpXG4gXG4gIFxuICB9XG4gIFxuICBcbiAgdG9wLnNjb3JlciA8LSBhcy5udW1lcmljKHdoaWNoLm1heChnZW4kZml0bmVzcykpXG4gIGZpbmFsLndlaWdodHM8LWdlbm9tZXNbW3RvcC5zY29yZXJdXVxuICByZXR1cm4oZmluYWwud2VpZ2h0cylcbn1cblxuXG5cbiNzdGF0aWMucnVuPC0gcnVuKDEpXG4jZHluYW1pYy5ydW48LSBydW4oMilcblxuXG5gYGAifQ== -->
 <pre class="r"><code>run&lt;- function(x){

@@ -75,7 +75,7 @@ dumpItemFunc <- function(item){
 }
 
 sigmoid <- function(x,mu=4.9){
-  return(2/(1+exp(-mu*x))-1)
+  return(1/(1+exp(-mu*x)))
 }
 
 
@@ -1050,18 +1050,3 @@ plotPerformanceTracker <- function(data){
   legend(x='bottomright', c("Min","Max","Mean","Median"),  fill=c("red","blue","green","purple"), bty='n')
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
