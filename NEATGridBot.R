@@ -1,5 +1,11 @@
 #Create Grid and GridBot
 library(ggplot2)
+library(animation)
+
+source('neat.R')
+source('neatCharting.R')
+source('neatFormula.R')
+
 #Parameters to control the simulation
 simulation.timestep = 0.005
 simulation.numoftimesteps = 100
@@ -37,8 +43,15 @@ gridBot.ConvertStateToNeuralNetInputs <- function(currentState){
   return (neuralNetInputs)
 }
 
+i <- 1
+plotState <- F
 #Update State: Takes data of gen's run in Grid, Gives next Genome
 gridBot.UpdateState <- function(currentState,neuralNetOutputs){
+  if(plotState){
+    p <- gridBot.PlotState(currentState)
+    ggsave(paste0('plots/',i,'.png'), p, device = png())
+    i <<- i + 1
+  }
   nn.vector <- unlist(neuralNetOutputs)
   sum.output<- sum(nn.vector)
   if(sum.output != 0){
@@ -80,7 +93,7 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
     df2$type <- 0
     df.all<- rbind(df, df2)
     df.all$type <- factor(df.all$type)
-    ggplot(df.all, aes(x=col, y=row, shape = type))+
+    p <- ggplot(df.all, aes(x=col, y=row, shape = type))+
       scale_shape_manual(values = c(21,22), guide=F)+
       geom_point(size=5)+
       scale_y_reverse()+
@@ -88,10 +101,12 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
       theme(axis.text = element_blank(),
             panel.grid=element_blank(),
             axis.title= element_blank())
+    return(p)
     #google r shapes
     }
   
  #Run
+  set.seed(12604)
   config <- newConfigNEAT(5,4,50,10)
   gridBot <- newNEATSimulation(config, gridBot.InitialState,
                                gridBot.UpdateState,
@@ -100,7 +115,7 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
                                gridBot.CheckForTermination,
                                gridBot.PlotState)
   
-  nMax <- 100 #Number of generations to run
+  nMax <- 10 #Number of generations to run
   for(i in seq(1,nMax)){
     gridBot <- NEATSimulation.RunSingleGeneration(gridBot)
     #poleSimulation <- NEATSimulation.RunSingleGeneration(poleSimulation,T,"videos",
@@ -113,13 +128,48 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   
 library(igraph)
   
-drawGenotypeNEAT.genome(gridBot$Pool$currentGenome,config,topLeftX=0,topLeftY=0)
-drawPhenotypeNEAT.genome(gridBot$Pool$currentGenome,config,topLeftX,topLeftY) #what are topLeft X and Y
-createGraph(gridBot$Pool$currentGenome,config)
-drawNEAT.genome(gridBot$Pool$currentGenome,config)
-
-drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
+# drawGenotypeNEAT.genome(gridBot$Pool$currentGenome,config,topLeftX=0,topLeftY=0)
+# drawPhenotypeNEAT.genome(gridBot$Pool$currentGenome,config,topLeftX,topLeftY) #what are topLeft X and Y
+# createGraph(gridBot$Pool$currentGenome,config)
+# drawNEAT.genome(gridBot$Pool$currentGenome,config)
+# 
+# drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
 
 drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
 
+<<<<<<< HEAD
+gridBot$Pool
+
+connectivity <- matrix(0, nrow=54, ncol=54)
+library(purrr)
+connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
+
+map(connections, function(x){
+  print(x)
+  from <- x$InNode
+  to <- x$OutNode
+  w <- x$Weight
+  print(from)
+  print(to)
+  print(w)
+  connectivity[from,to] <<- w
+})
+
+which(connectivity != 0)
+
+g <- igraph::graph_from_adjacency_matrix(connectivity)
+
+?modularity_matrix()
+modularity(g)
+=======
 gridBot$PerformanceTracker
+
+
+### try to run one agent
+
+plotState <- T
+simulationRunner(gridBot, 1, 1, F, 100, 1)
+<<<<<<< HEAD
+>>>>>>> 6fb7b3b1ae50b754bda8fff7c1d6f68692552b8d
+=======
+>>>>>>> 6fb7b3b1ae50b754bda8fff7c1d6f68692552b8d
