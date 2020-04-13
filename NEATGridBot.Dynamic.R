@@ -131,3 +131,26 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   plotState <- T
   #simulationRunner <- function(simulation,speciesNum,genomeNum,plotScene, pctSimulated,framesPerSecond=1)
   simulationRunner(gridBot, 1, 1, F, 100, 1)
+
+  
+  # ================================================================================================  
+  
+  
+  connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
+  write.csv(connections,"finalists/weights_neat_dynamic.csv", row.names = T)
+  
+  map(connections, function(x){
+    print(x)
+    from <- x$InNode
+    to <- x$OutNode
+    w <- x$Weight
+    print(from)
+    print(to)
+    print(w)
+    connectivity[from,to] <<- w
+  })
+  
+  #which(connectivity != 0)
+  
+  g <- igraph::graph_from_adjacency_matrix(connectivity)
+  

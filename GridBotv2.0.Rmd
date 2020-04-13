@@ -480,11 +480,22 @@ makeMove<- function(weights, state){
   sum.output<- sum(output)
   adj.output <- output/sum.output
   
+  
   action <- sample(c(moveForward,moveBackward, turnClock, turnCounter),1,  prob=adj.output)
   new.state <- action[[1]](state)
   
   state <- new.state
-
+  
+  
+  i <- 1
+  plotState <- F
+#Update State: Takes data of gen's run in Grid, Gives next Genome
+  if(plotState){
+    p <- gridBotANN.PlotState(state)
+    ggsave(paste0('plots/',i,'.png'), p, device = png())
+    i <<- i + 1
+  }
+  
   return(new.state)
 }
 
@@ -675,6 +686,9 @@ run<- function(x){
 
   for (a in 2:N.gen) {
    print(a)
+    if(a == N.gen-1){
+       plotState <- T
+    }
     genomes<- next.genomes(gen, genomes)
      for (i in 1:length(genomes)) {
        #print(genomes[i])
@@ -695,7 +709,6 @@ run<- function(x){
 ```
 Attempt to Plot
 ```{r}
-
 gridBotANN.PlotState <-function(state){
     gridVisPlot<-state[[2]]
     df<- as.data.frame(which(gridVisPlot == 1, arr.ind = T))
@@ -715,6 +728,10 @@ gridBotANN.PlotState <-function(state){
     return(p)
     #google r shapes
     }
+
+ 
+
+
 
 ```
 

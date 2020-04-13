@@ -156,7 +156,7 @@ library(igraph)
 #<<<<<<< HEAD
 #gridBot$Pool
 
-#connectivity <- matrix(0, nrow=54, ncol=54)
+connectivity <- matrix(0, nrow=54, ncol=54)
 library(purrr)
 connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
 
@@ -171,7 +171,7 @@ map(connections, function(x){
   connectivity[from,to] <<- w
 })
 
-#which(connectivity != 0)
+which(connectivity != 0)
 
 g <- igraph::graph_from_adjacency_matrix(connectivity)
 
