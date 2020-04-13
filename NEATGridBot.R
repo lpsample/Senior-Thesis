@@ -137,7 +137,7 @@ library(igraph)
 
 drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
 
-<<<<<<< HEAD
+#<<<<<<< HEAD
 gridBot$Pool
 
 connectivity <- matrix(0, nrow=54, ncol=54)
@@ -161,7 +161,7 @@ g <- igraph::graph_from_adjacency_matrix(connectivity)
 
 ?modularity_matrix()
 modularity(g)
-=======
+#=======
 gridBot$PerformanceTracker
 
 
@@ -169,7 +169,10 @@ gridBot$PerformanceTracker
 
 plotState <- T
 simulationRunner(gridBot, 1, 1, F, 100, 1)
-<<<<<<< HEAD
->>>>>>> 6fb7b3b1ae50b754bda8fff7c1d6f68692552b8d
-=======
->>>>>>> 6fb7b3b1ae50b754bda8fff7c1d6f68692552b8d
+# <<<<<<< HEAD
+# <<<<<<< HEAD
+# >>>>>>> 6fb7b3b1ae50b754bda8fff7c1d6f68692552b8d
+# =======
+# >>>>>>> 6fb7b3b1ae50b754bda8fff7c1d6f68692552b8d
+# =======
+# >>>>>>> 6fb7b3b1ae50b754bda8fff7c1d6f68692552b8d
