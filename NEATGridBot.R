@@ -39,7 +39,6 @@ gridBot.ConvertStateToNeuralNetInputs <- function(currentState){
   
   neuralNetInputs<- c(leftLight,leftIR, bump, rightIR, rightLight) 
   
-  
   return (neuralNetInputs)
 }
 
@@ -59,7 +58,6 @@ gridBot.UpdateState <- function(currentState,neuralNetOutputs){
   } else {
     adj.output <- rep(0.25,4)
   }
-  
   
   action <- sample(c(moveForward,moveBackward, turnClock, turnCounter),1, prob = adj.output)
   #need to add prob = adj.output back in, it was having errors
@@ -107,6 +105,7 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   
  #Run
   set.seed(12604)
+  #(numInputs,numOutputs,maxNumOfNodes, speciesPopulation=200
   config <- newConfigNEAT(5,4,50,10)
   gridBot <- newNEATSimulation(config, gridBot.InitialState,
                                gridBot.UpdateState,
@@ -115,13 +114,13 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
                                gridBot.CheckForTermination,
                                gridBot.PlotState)
   
-  nMax <- 10 #Number of generations to run
+# ================================================================================================  
+  nMax <- 100 #Number of generations to run
   for(i in seq(1,nMax)){
     gridBot <- NEATSimulation.RunSingleGeneration(gridBot)
     #poleSimulation <- NEATSimulation.RunSingleGeneration(poleSimulation,T,"videos",
     #                                            "poleBalance",1/simulation.timestep)
   }
-  
   
 
 #drawGenotypeNEAT(gridBot, config, 100,100)
@@ -135,14 +134,14 @@ library(igraph)
 # 
 # drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
 
-drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
+#drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
 
 #<<<<<<< HEAD
-gridBot$Pool
+#gridBot$Pool
 
-connectivity <- matrix(0, nrow=54, ncol=54)
+#connectivity <- matrix(0, nrow=54, ncol=54)
 library(purrr)
-connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
+#connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
 
 map(connections, function(x){
   print(x)
@@ -155,20 +154,23 @@ map(connections, function(x){
   connectivity[from,to] <<- w
 })
 
-which(connectivity != 0)
+#which(connectivity != 0)
 
-g <- igraph::graph_from_adjacency_matrix(connectivity)
+#g <- igraph::graph_from_adjacency_matrix(connectivity)
 
-?modularity_matrix()
-modularity(g)
+#?modularity_matrix()
+#modularity(g)
 #=======
-gridBot$PerformanceTracker
+#gridBot$PerformanceTracker
 
 
 ### try to run one agent
 
 plotState <- T
+#simulationRunner <- function(simulation,speciesNum,genomeNum,plotScene, pctSimulated,framesPerSecond=1)
 simulationRunner(gridBot, 1, 1, F, 100, 1)
+
+
 # <<<<<<< HEAD
 # <<<<<<< HEAD
 # >>>>>>> 6fb7b3b1ae50b754bda8fff7c1d6f68692552b8d

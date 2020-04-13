@@ -536,9 +536,9 @@ setUp<- function(x){
 upate sensor vals
 
 ```{r}
-N.moves <-100
-N.bots <- 10
-N.gen <- 100
+# N.moves <-100
+# N.bots <- 10
+# N.gen <- 100
 
 #runs bots with 100 moves
 
@@ -657,22 +657,22 @@ mutate <- function(weights){
 ```
 
 ```{r}
-N.moves <-100
-N.bots <- 10
-N.gen <- 100
+# N.moves <-100
+# N.bots <- 10
+# N.gen <- 100
+# 
 
-
-bots <- createGeneration(10)
-genomes<- makeRandWeights()
-old.gen <- runGeneration(bots, 1)
-b<-next.genomes(old.gen, genomes)
-mutate(b)
-
+# bots <- createGeneration(10)
+# genomes<- makeRandWeights()
+# old.gen <- runGeneration(bots, 1)
+# b<-next.genomes(old.gen, genomes)
+# mutate(b)
+# 
 run<- function(x){
   #x<-1
   genomes<- createGeneration(N.bots)
   gen<- runGeneration(genomes, x)
-  
+
   for (a in 2:N.gen) {
    print(a)
     genomes<- next.genomes(gen, genomes)
@@ -683,20 +683,13 @@ run<- function(x){
       #print(genomes[i])
     }
     gen <- runGeneration(genomes, x)
- 
-  
+
   }
-  
-  
+
   top.scorer <- as.numeric(which.max(gen$fitness))
   final.weights<-genomes[[top.scorer]]
   return(final.weights)
 }
-
-
-
-#static.run<- run(1)
-#dynamic.run<- run(2)
 
 
 ```
