@@ -1,6 +1,7 @@
 N.moves <-100
 N.bots <- 10
 N.gen <- 100
+plotState <- F
 
 set.seed(12604)
 

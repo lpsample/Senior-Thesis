@@ -488,7 +488,6 @@ makeMove<- function(weights, state){
   
   
   i <- 1
-  plotState <- F
 #Update State: Takes data of gen's run in Grid, Gives next Genome
   if(plotState){
     p <- gridBotANN.PlotState(state)
@@ -539,10 +538,6 @@ setUp<- function(x){
 
 
 ```
-
-
-
-
 
 upate sensor vals
 
@@ -688,6 +683,8 @@ run<- function(x){
    print(a)
     if(a == N.gen-1){
        plotState <- T
+    } else {
+      plotState <- F
     }
     genomes<- next.genomes(gen, genomes)
      for (i in 1:length(genomes)) {
@@ -734,30 +731,3 @@ gridBotANN.PlotState <-function(state){
 
 
 ```
-
-
-
-Next steps:
-  run agent through grid world
-  agent that makes random decisions
-  assign score to them about how well they do
-  fitness component
-  genetic alogrythm to evolve control structures
-  
-  
-  Four actions: turn turn up back
-  make next decision: randomly chooses one of the 4
-  sample with replacement
-  call function for action picked using if statement
-  put in a loop, do x amount of times
-  all bots in dataframe
-  
-  fitness score for each in dataframe
-  
-  
-  
-  
-  proof of concept of evolution working: demo of modeling approach
-  paper can imagine what you can learn from model hypothetically 
-  
-  
