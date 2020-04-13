@@ -82,6 +82,14 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
     }
 }
   
+# cardinal: an ordered pair that designates next move
+# y, x
+# (rows, col)
+# (1,0) -> down
+# (0, 1) -> right
+# (-1,0) -> up
+# (0, -1) -> left
+
   #Plot
   gridBot.PlotState <-function(updatedState){
     gridVisPlot<-updatedState[[2]]
@@ -123,6 +131,7 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   }
   
   finalists<- gridBot$PerformanceTracker
+  write.csv(finalists,"finalists/neat_static.csv", row.names = T)
   finalists[100]$children
   
   gridBot$Pool$generation

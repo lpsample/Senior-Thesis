@@ -693,6 +693,30 @@ run<- function(x){
 
 
 ```
+Attempt to Plot
+```{r}
+
+gridBotANN.PlotState <-function(state){
+    gridVisPlot<-state[[2]]
+    df<- as.data.frame(which(gridVisPlot == 1, arr.ind = T))
+    df$type <- 1
+    df2<- as.data.frame(which(gridVisPlot == 0, arr.ind = T))
+    df2$type <- 0
+    df.all<- rbind(df, df2)
+    df.all$type <- factor(df.all$type)
+    p <- ggplot(df.all, aes(x=col, y=row, shape = type))+
+      scale_shape_manual(values = c(21,22), guide=F)+
+      geom_point(size=5)+
+      scale_y_reverse()+
+      theme_minimal()+
+      theme(axis.text = element_blank(),
+            panel.grid=element_blank(),
+            axis.title= element_blank())
+    return(p)
+    #google r shapes
+    }
+
+```
 
 
 
