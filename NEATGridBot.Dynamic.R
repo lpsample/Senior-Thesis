@@ -125,7 +125,14 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   finalists<- gridBot$PerformanceTracker
   write.csv(finalists,"finalists/neat_dynamic.csv", row.names = T)
 #drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
-#drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
+drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
+  
+  
+  gridBot$Pool$species[[1]]$genomes[[1]]$Fitness
+  
+  
+  #drawSideBySideNEAT <- function(genomeOne,genomeTwo,neatConfig,chartDescription)
+  drawSideBySideNEAT(gridBot$Pool$species[[1]]$genomes[[1]], gridBot$Pool$species[[2]]$genomes[[1]], config)
   
   
   plotState <- T
