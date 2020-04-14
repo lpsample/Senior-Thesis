@@ -14,29 +14,34 @@ library(dplyr)
 neat.dynamic<- read.csv('finalists/neat_dynamic_4_13.csv')
 neat.static<- read.csv('finalists/neat_static_4_13.csv')
 
+?options
 
+options(device="R_DEFAULT_DEVICE")
+dev.off()
+
+?ggsave
 
 d<- ggplot(neat.dynamic, aes(x=generation, y= meanFitness)) + 
   geom_point()
 
-print(d)
 
-
-
-neat.dynamic.mean <- neat.dynamic %>%
-  select(generation, meanFitness)
-
-plot(neat.dynamic, aes(x=generation, y= meanFitness))+
-  geom_line()+
+#neat.dynamic
+ggplot(neat.dynamic, aes(x=generation, y= meanFitness)) + 
   geom_point()+
-  geom_errorbar(aes(ymin=neat.dynamic$minFitness, ymax=neat.dynamic$maxFitness), width = .2, poisition = position_dodge(0.05))
-  
-  ggplot(neat.dynamic, aes(x=generation, y= meanFitness))+
-  geom_line()+
-  geom_point()+
-  geom_errorbar(aes(ymin=minFitness, ymax=maxFitness), width = .2, poisition = position_dodge(0.05))
-
-?ggplot
-
+   geom_errorbar(aes(ymin=neat.dynamic$minFitness, ymax=neat.dynamic$maxFitness), width = .2)+
+  ylim(0, 20000)+
+  theme_bw()+
+  geom_smooth(method='lm', formula= y~x)+
+  labs(title= "NEAT Dynamic", x= "Generation", y= "Fitness")
 ```
 
+```{r}
+#neat.static
+ggplot(neat.static, aes(x=generation, y= meanFitness)) + 
+  geom_point()+
+   geom_errorbar(aes(ymin=neat.static$minFitness, ymax=neat.static$maxFitness), width = .2)+
+  ylim(0, 20000)+
+  theme_bw()+
+  geom_smooth(method='lm', formula= y~x)+
+  labs(title= "NEAT Static", x= "Generation", y= "Fitness")
+```
