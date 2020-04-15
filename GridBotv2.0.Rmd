@@ -85,6 +85,8 @@ dynamicNums<-function(){
   return (c(nRows, nCols))
 }
 
+
+
 ```
 
 Agent traverses block matrix
@@ -487,12 +489,13 @@ makeMove<- function(weights, state){
   state <- new.state
   
   
-  i <- 1
+  
 #Update State: Takes data of gen's run in Grid, Gives next Genome
   if(plotState){
     p <- gridBotANN.PlotState(state)
-    ggsave(paste0('plots/',i,'.png'), p, device = png())
-    i <<- i + 1
+    ggsave(paste0('plots/',plot.num,'.png'), p, device = png())
+    plot.num <<- plot.num + 1
+    dev.off()
   }
   
   return(new.state)
@@ -663,22 +666,45 @@ mutate <- function(weights){
 ```
 
 ```{r}
-# N.moves <-100
-# N.bots <- 10
-# N.gen <- 100
-# 
 
-# bots <- createGeneration(10)
-# genomes<- makeRandWeights()
-# old.gen <- runGeneration(bots, 1)
-# b<-next.genomes(old.gen, genomes)
-# mutate(b)
+# run<- function(x){
+#   #x<-1
+#   genomes<- createGeneration(N.bots)
+#   gen<- runGeneration(genomes, x)
 # 
+#   for (a in 2:N.gen) {
+#    print(a)
+#     if(a == N.gen){
+#       #plotState <<- T
+#     } else {
+#       plotState <<- F
+#     }
+#     genomes<- next.genomes(gen, genomes)
+#      for (i in 1:length(genomes)) {
+#        #print(genomes[i])
+#        #i<-1
+#       genomes[[i]]<- mutate(genomes[[i]])
+#       #print(genomes[i])
+#     }
+#     gen <- runGeneration(genomes, x)
+# 
+#   }
+# 
+#   top.scorer <- as.numeric(which.max(gen$fitness))
+#   
+#   
+#   final.weights<-genomes[[top.scorer]]
+#   return(final.weights)
+# }
+
 run<- function(x){
   #x<-1
   genomes<- createGeneration(N.bots)
   gen<- runGeneration(genomes, x)
 
+  gen.history <- gen
+  gen.history$generation <- 1
+  
   for (a in 2:N.gen) {
    print(a)
     if(a == N.gen-1){
@@ -694,12 +720,15 @@ run<- function(x){
       #print(genomes[i])
     }
     gen <- runGeneration(genomes, x)
+    gen.copy <- gen
+    gen.copy$generation <- a
+    gen.history <- rbind(gen.history, gen.copy)
 
   }
 
   top.scorer <- as.numeric(which.max(gen$fitness))
   final.weights<-genomes[[top.scorer]]
-  return(final.weights)
+  return(list(best.agent.weights = final.weights, gen.history=gen.history))
 }
 
 
@@ -723,7 +752,6 @@ gridBotANN.PlotState <-function(state){
             panel.grid=element_blank(),
             axis.title= element_blank())
     return(p)
-    #google r shapes
     }
 
  

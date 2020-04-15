@@ -50,6 +50,7 @@ gridBot.UpdateState <- function(currentState,neuralNetOutputs){
     p <- gridBot.PlotState(currentState)
     ggsave(paste0('plots/',i,'.png'), p, device = png())
     i <<- i + 1
+    dev.off()
   }
   nn.vector <- unlist(neuralNetOutputs)
   sum.output<- sum(nn.vector)
@@ -124,21 +125,34 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   
   finalists<- gridBot$PerformanceTracker
   write.csv(finalists,"finalists/neat_dynamic.csv", row.names = T)
-#drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
-drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
+  
+  library(igraph)
+  
+drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
+#drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
   
   
   gridBot$Pool$species[[1]]$genomes[[1]]$Fitness
   
   
+  #drawNEAT.genome <- function(genome,neatConfig)
+  drawNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config)
+    
+    
   #drawSideBySideNEAT <- function(genomeOne,genomeTwo,neatConfig,chartDescription)
-  drawSideBySideNEAT(gridBot$Pool$species[[1]]$genomes[[1]], gridBot$Pool$species[[2]]$genomes[[1]], config)
+  #drawSideBySideNEAT(gridBot$Pool$species[[1]]$genomes[[1]], gridBot$Pool$species[[2]]$genomes[[1]], config)
   
   
   plotState <- T
   #simulationRunner <- function(simulation,speciesNum,genomeNum,plotScene, pctSimulated,framesPerSecond=1)
   simulationRunner(gridBot, 1, 1, F, 100, 1)
 
+  x<-0
+  while(x<100){
+  dev.off()
+    x<- x+1
+    }
+  dev.list()
   
   # ================================================================================================  
   

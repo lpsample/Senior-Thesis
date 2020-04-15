@@ -50,6 +50,7 @@ gridBot.UpdateState <- function(currentState,neuralNetOutputs){
     p <- gridBot.PlotState(currentState)
     ggsave(paste0('plots/',i,'.png'), p, device = png())
     i <<- i + 1
+    dev.off()
   }
   nn.vector <- unlist(neuralNetOutputs)
   sum.output<- sum(nn.vector)

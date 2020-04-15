@@ -25,23 +25,45 @@ d<- ggplot(neat.dynamic, aes(x=generation, y= meanFitness)) +
   geom_point()
 
 
-#neat.dynamic
+#neat.dynamic.mean
 ggplot(neat.dynamic, aes(x=generation, y= meanFitness)) + 
   geom_point()+
    geom_errorbar(aes(ymin=neat.dynamic$minFitness, ymax=neat.dynamic$maxFitness), width = .2)+
   ylim(0, 20000)+
   theme_bw()+
-  geom_smooth(method='lm', formula= y~x)+
-  labs(title= "NEAT Dynamic", x= "Generation", y= "Fitness")
+  #geom_smooth(method='lm', formula= y~x)+
+  labs(title= "NEAT Dynamic (Mean)", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
-#neat.static
+#neat.dynamic.median
+ggplot(neat.dynamic, aes(x=generation, y= medianFitness)) + 
+  geom_point()+
+   geom_errorbar(aes(ymin=neat.dynamic$minFitness, ymax=neat.dynamic$maxFitness), width = .2)+
+  ylim(0, 20000)+
+  theme_bw()+
+  geom_smooth(method='lm', formula= y~x)+
+  labs(title= "NEAT Dynamic (Median)", x= "Generation", y= "Fitness")
+```
+
+```{r}
+#neat.static.mean
 ggplot(neat.static, aes(x=generation, y= meanFitness)) + 
   geom_point()+
    geom_errorbar(aes(ymin=neat.static$minFitness, ymax=neat.static$maxFitness), width = .2)+
   ylim(0, 20000)+
   theme_bw()+
-  geom_smooth(method='lm', formula= y~x)+
-  labs(title= "NEAT Static", x= "Generation", y= "Fitness")
+  #geom_smooth(method='lm', formula= y~x)+
+  labs(title= "NEAT Static (Mean)", x= "Generation", y= "Fitness")
+```
+
+```{r}
+#neat.static.median
+ggplot(neat.static, aes(x=generation, y= medianFitness)) + 
+  geom_point()+
+   geom_errorbar(aes(ymin=neat.static$minFitness, ymax=neat.static$maxFitness), width = .2)+
+  ylim(0, 20000)+
+  theme_bw()+
+  #geom_smooth(method='lm', formula= y~x)+
+  labs(title= "NEAT Static (Median)", x= "Generation", y= "Fitness")
 ```
