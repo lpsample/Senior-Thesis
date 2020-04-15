@@ -1,6 +1,8 @@
 #Create Grid and GridBot
 library(ggplot2)
 library(animation)
+library(igraph)
+library(dplyr)
 
 source('neat.R')
 source('neatCharting.R')
@@ -12,6 +14,8 @@ simulation.numoftimesteps = 100
 N.moves <-100
 N.bots <- 10
 N.gen <- 100
+plotState <- F
+plot.num <- 1
 
 # Initial State (1 or 2 is static or dynamic, going to start with static): Initial genomes
 # STATE IN THIS VERSION IS WEIGHTS!!! EACH GEN CHANGES
@@ -133,16 +137,20 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   
   finalists<- gridBot$PerformanceTracker
   write.csv(finalists,"finalists/neat_static.csv", row.names = T)
-  finalists[100]$children
+  #finalists[100]$children
   
-  gridBot$Pool$generation
-  gridBot$Pool$current
+  #calcTotalNumOfGenomes <- function(simulation){
+  #calcTotalNumOfGenomes(gridBot)
   
-  ind <- gridBot$Pool$species[[1]]$genomes[[1]]$Fitness
+  #gridBot$Pool$generation
+  #gridBot$Pool$current
   
+  #ind <- gridBot$Pool$species[[1]]$genomes[[1]]$Fitness
   
-  #drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
-  drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
+  gridBot$Pool$species[[1]]$genomes[[1]]$Fitness
+  
+  drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
+  #drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
   
   
   plotState <- T
@@ -150,31 +158,29 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   simulationRunner(gridBot, 1, 1, F, 100, 1)
 
  
-library(igraph)
+
   
+#=========================================================================================================
 
-
-#<<<<<<< HEAD
-#gridBot$Pool
-
-connectivity <- matrix(0, nrow=54, ncol=54)
-library(purrr)
-connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
-
-map(connections, function(x){
-  print(x)
-  from <- x$InNode
-  to <- x$OutNode
-  w <- x$Weight
-  print(from)
-  print(to)
-  print(w)
-  connectivity[from,to] <<- w
-})
-
-which(connectivity != 0)
-
-g <- igraph::graph_from_adjacency_matrix(connectivity)
-
-#?modularity_matrix()
-#modularity(g)
+# 
+# connectivity <- matrix(0, nrow=54, ncol=54)
+# library(purrr)
+# connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
+# 
+# map(connections, function(x){
+#   print(x)
+#   from <- x$InNode
+#   to <- x$OutNode
+#   w <- x$Weight
+#   print(from)
+#   print(to)
+#   print(w)
+#   connectivity[from,to] <<- w
+# })
+# 
+# which(connectivity != 0)
+# 
+# g <- igraph::graph_from_adjacency_matrix(connectivity)
+# 
+# #?modularity_matrix()
+# #modularity(g)

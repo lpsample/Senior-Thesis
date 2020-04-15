@@ -732,6 +732,8 @@ run<- function(x){
 }
 
 
+
+
 ```
 Attempt to Plot
 ```{r}
@@ -753,9 +755,5 @@ gridBotANN.PlotState <-function(state){
             axis.title= element_blank())
     return(p)
     }
-
- 
-
-
 
 ```

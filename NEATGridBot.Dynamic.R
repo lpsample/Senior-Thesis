@@ -1,6 +1,8 @@
 #Create Grid and GridBot
 library(ggplot2)
 library(animation)
+library(igraph)
+library(dplyr)
 
 source('neat.R')
 source('neatCharting.R')
@@ -12,6 +14,8 @@ simulation.numoftimesteps = 100
 N.moves <-100
 N.bots <- 10
 N.gen <- 100
+plotState <- F
+plot.num <- 1
 
 # Initial State (1 or 2 is static or dynamic, going to start with static): Initial genomes
 # STATE IN THIS VERSION IS WEIGHTS!!! EACH GEN CHANGES
@@ -126,52 +130,24 @@ gridBot.CheckForTermination <- function(frameNum,oldState,updatedState,oldFitnes
   finalists<- gridBot$PerformanceTracker
   write.csv(finalists,"finalists/neat_dynamic.csv", row.names = T)
   
-  library(igraph)
   
 drawNEAT(gridBot$Pool$species[[1]]$genomes[[1]], config)
 #drawGenotypeNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config, topLeftX = 0, topLeftY = 0)
   
   
-  gridBot$Pool$species[[1]]$genomes[[1]]$Fitness
+  #gridBot$Pool$species[[1]]$genomes[[1]]$Fitness
   
   
   #drawNEAT.genome <- function(genome,neatConfig)
-  drawNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config)
+  #drawNEAT.genome(gridBot$Pool$species[[1]]$genomes[[1]], config)
     
     
   #drawSideBySideNEAT <- function(genomeOne,genomeTwo,neatConfig,chartDescription)
   #drawSideBySideNEAT(gridBot$Pool$species[[1]]$genomes[[1]], gridBot$Pool$species[[2]]$genomes[[1]], config)
   
-  
+i <- 1
   plotState <- T
   #simulationRunner <- function(simulation,speciesNum,genomeNum,plotScene, pctSimulated,framesPerSecond=1)
   simulationRunner(gridBot, 1, 1, F, 100, 1)
 
-  x<-0
-  while(x<100){
-  dev.off()
-    x<- x+1
-    }
-  dev.list()
-  
-  # ================================================================================================  
-  
-  
-  connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
-  write.csv(connections,"finalists/weights_neat_dynamic.csv", row.names = T)
-  
-  map(connections, function(x){
-    print(x)
-    from <- x$InNode
-    to <- x$OutNode
-    w <- x$Weight
-    print(from)
-    print(to)
-    print(w)
-    connectivity[from,to] <<- w
-  })
-  
-  #which(connectivity != 0)
-  
-  g <- igraph::graph_from_adjacency_matrix(connectivity)
-  
+ 
