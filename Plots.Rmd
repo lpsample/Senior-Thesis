@@ -202,4 +202,6 @@ write.csv(d4,"finalists/24x4.csv", row.names = T)
 d5<- makeGrids(2)
 d5
 write.csv(d5,"finalists/20x5.csv", row.names = T)
+
+makeGrids(1)
 ```
