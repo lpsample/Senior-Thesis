@@ -2372,13 +2372,13 @@ next.genomes&lt;- function(old.gen, old.genomes){
  w[1, 1] &lt;- as.numeric(sample(weight.options, 1))
  w</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdIC0wLjUgIDAuMCAtMC41IC0xLjBcblsyLF0gLTEuMCAtMS4wICAwLjUgIDAuNVxuWzMsXSAgMS4wICAwLjAgIDAuMCAgMC41XG5bNCxdICAwLjAgLTAuNSAgMS4wICAxLjBcbls1LF0gIDAuMCAgMC41ICAwLjAgIDAuMFxuIn0= -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdIC0xLjAgIDEuMCAtMS4wICAxLjBcblsyLF0gIDAuNSAgMC41ICAwLjUgLTAuNVxuWzMsXSAgMC4wICAwLjAgIDAuNSAgMC4wXG5bNCxdICAwLjUgLTEuMCAtMS4wIC0wLjVcbls1LF0gLTEuMCAtMC41ICAxLjAgLTEuMFxuIn0= -->
 <pre><code>     [,1] [,2] [,3] [,4]
-[1,] -0.5  0.0 -0.5 -1.0
-[2,] -1.0 -1.0  0.5  0.5
-[3,]  1.0  0.0  0.0  0.5
-[4,]  0.0 -0.5  1.0  1.0
-[5,]  0.0  0.5  0.0  0.0</code></pre>
+[1,] -1.0  1.0 -1.0  1.0
+[2,]  0.5  0.5  0.5 -0.5
+[3,]  0.0  0.0  0.5  0.0
+[4,]  0.5 -1.0 -1.0 -0.5
+[5,] -1.0 -0.5  1.0 -1.0</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXV0YXRlIDwtIGZ1bmN0aW9uKHdlaWdodHMpe1xuIFxuICAgXG4gIG5ldy53ZWlnaHRzIDwtIHdlaWdodHNcbiAgXG4gIHdlaWdodC5vcHRpb25zPC0gYygtMSwgLS41LCAwLCAuNSwgMSlcbiAgI2k8LSBzYW1wbGUobGVuZ3RoKHdlaWdodHMpLCAxKVxuICAjZGltKHdlaWdodHMpXG4gIFxuICByPC1hcy5udW1lcmljKG5yb3cod2VpZ2h0cykpXG4gIGM8LWFzLm51bWVyaWMobmNvbCh3ZWlnaHRzKSlcbiAgXG4gIHIubTwtIGFzLm51bWVyaWMoc2FtcGxlKHIsIDEpKVxuICBjLm08LSBhcy5udW1lcmljKHNhbXBsZShjLCAxKSlcblxuICAjcHJpbnQobmV3LndlaWdodHMpXG4gICNwcmludChuZXcud2VpZ2h0c1tyLm0sIGMubV0pXG4gIG5ldy53ZWlnaHRzW3IubSwgYy5tXSA8LSBhcy5udW1lcmljKHNhbXBsZSh3ZWlnaHQub3B0aW9ucywgMSkpXG4gIFxuICAjcHJpbnQobmV3LndlaWdodHMpXG4gIHJldHVybihuZXcud2VpZ2h0cylcbn1cblxuICBcbiAgI25ldy53ZWlnaHRzIDwtIHJub3JtKGxlbmd0aCh3ZWlnaHRzKSwgbWVhbj13ZWlnaHRzLCBzZD0wLjA1KVxuICAjMTAlIG11dGF0aW9uLCBjaGFuZ2Ugd2VpZ2h0c1xuXG4jc2tpcCB0aGF0IGRvIGEgbG9vcCBjaGFuZ2Ugb25lXG5cbiNmb3IgbG9vcCwgMSB0byB0b3RhbCBnZW5zLCBkb2VzIGFsbCBzdGVwc1xuXG4jbXV0YXRlcyBnZW5vbWVzXG4jIGZvciAoaSBpbiAxOmxlbmd0aChuZXh0LmJvdHMpKXtcbiMgICAgbmV4dC5ib3RzW1tpXV0gPC0gbXV0YXRlKG5leHQuYm90c1tbaV1dKVxuIyB9XG5cblxuYGBgIn0= -->
 <pre class="r"><code>mutate &lt;- function(weights){
@@ -2494,7 +2494,7 @@ run&lt;- function(x){
 <p>Attempt to Plot</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JpZEJvdEFOTi5QbG90U3RhdGUgPC1mdW5jdGlvbihzdGF0ZSl7XG4gICAgZ3JpZFZpc1Bsb3Q8LXN0YXRlW1syXV1cbiAgICBkZjwtIGFzLmRhdGEuZnJhbWUod2hpY2goZ3JpZFZpc1Bsb3QgPT0gMSwgYXJyLmluZCA9IFQpKVxuICAgIGRmJHR5cGUgPC0gMVxuICAgIGRmMjwtIGFzLmRhdGEuZnJhbWUod2hpY2goZ3JpZFZpc1Bsb3QgPT0gMCwgYXJyLmluZCA9IFQpKVxuICAgIGRmMiR0eXBlIDwtIDBcbiAgICBkZi5hbGw8LSByYmluZChkZiwgZGYyKVxuICAgIGRmLmFsbCR0eXBlIDwtIGZhY3RvcihkZi5hbGwkdHlwZSlcbiAgICBwIDwtIGdncGxvdChkZi5hbGwsIGFlcyh4PWNvbCwgeT1yb3csIHNoYXBlID0gdHlwZSkpK1xuICAgICAgc2NhbGVfc2hhcGVfbWFudWFsKHZhbHVlcyA9IGMoMjEsMjIpLCBndWlkZT1GKStcbiAgICAgIGdlb21fcG9pbnQoc2l6ZT01KStcbiAgICAgIHNjYWxlX3lfcmV2ZXJzZSgpK1xuICAgICAgdGhlbWVfbWluaW1hbCgpK1xuICAgICAgdGhlbWUoYXhpcy50ZXh0ID0gZWxlbWVudF9ibGFuaygpLFxuICAgICAgICAgICAgcGFuZWwuZ3JpZD1lbGVtZW50X2JsYW5rKCksXG4gICAgICAgICAgICBheGlzLnRpdGxlPSBlbGVtZW50X2JsYW5rKCkpXG4gICAgcmV0dXJuKHApXG4gICAgfVxuXG4gXG5cblxuXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JpZEJvdEFOTi5QbG90U3RhdGUgPC1mdW5jdGlvbihzdGF0ZSl7XG4gICAgZ3JpZFZpc1Bsb3Q8LXN0YXRlW1syXV1cbiAgICBkZjwtIGFzLmRhdGEuZnJhbWUod2hpY2goZ3JpZFZpc1Bsb3QgPT0gMSwgYXJyLmluZCA9IFQpKVxuICAgIGRmJHR5cGUgPC0gMVxuICAgIGRmMjwtIGFzLmRhdGEuZnJhbWUod2hpY2goZ3JpZFZpc1Bsb3QgPT0gMCwgYXJyLmluZCA9IFQpKVxuICAgIGRmMiR0eXBlIDwtIDBcbiAgICBkZi5hbGw8LSByYmluZChkZiwgZGYyKVxuICAgIGRmLmFsbCR0eXBlIDwtIGZhY3RvcihkZi5hbGwkdHlwZSlcbiAgICBwIDwtIGdncGxvdChkZi5hbGwsIGFlcyh4PWNvbCwgeT1yb3csIHNoYXBlID0gdHlwZSkpK1xuICAgICAgc2NhbGVfc2hhcGVfbWFudWFsKHZhbHVlcyA9IGMoMjEsMjIpLCBndWlkZT1GKStcbiAgICAgIGdlb21fcG9pbnQoc2l6ZT01KStcbiAgICAgIHNjYWxlX3lfcmV2ZXJzZSgpK1xuICAgICAgdGhlbWVfbWluaW1hbCgpK1xuICAgICAgdGhlbWUoYXhpcy50ZXh0ID0gZWxlbWVudF9ibGFuaygpLFxuICAgICAgICAgICAgcGFuZWwuZ3JpZD1lbGVtZW50X2JsYW5rKCksXG4gICAgICAgICAgICBheGlzLnRpdGxlPSBlbGVtZW50X2JsYW5rKCkpXG4gICAgcmV0dXJuKHApXG4gICAgfVxuXG5gYGAifQ== -->
 <pre class="r"><code>gridBotANN.PlotState &lt;-function(state){
     gridVisPlot&lt;-state[[2]]
     df&lt;- as.data.frame(which(gridVisPlot == 1, arr.ind = T))
@@ -2513,8 +2513,6 @@ run&lt;- function(x){
             axis.title= element_blank())
     return(p)
     }
-
- 
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->

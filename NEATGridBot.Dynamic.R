@@ -149,5 +149,23 @@ i <- 1
   plotState <- T
   #simulationRunner <- function(simulation,speciesNum,genomeNum,plotScene, pctSimulated,framesPerSecond=1)
   simulationRunner(gridBot, 1, 1, F, 100, 1)
+  
+#=============================
+  connectivity <- matrix(0, nrow=54, ncol=54)
+  library(purrr)
+  connections <- gridBot$Pool$species[[1]]$genomes[[1]]$ConnectionGenes
+  
+  map(connections, function(x){
+    print(x)
+    from <- x$InNode
+    to <- x$OutNode
+    w <- x$Weight
+    print(from)
+    print(to)
+    print(w)
+    connectivity[from,to] <<- w
+  })
+  
+  write.csv(connectivity,"finalists/neat_dynamic_weights.csv", row.names = T)
 
  

@@ -151,3 +151,39 @@ ggplot(ann.dynamic.500, aes(x=generation, y= medianFitness)) +
   geom_smooth(method='lm', formula= y~x)+
   labs(title= "ANN Dynamic (Median), 500 Generations", x= "Generation", y= "Fitness")
 ```
+
+```{r}
+library(dplyr)
+neat.static.weights<- read.csv('finalists/neat_static_weights.csv')
+neat.dynamic.weights<- read.csv('finalists/neat_dynamic_weights.csv')
+
+
+dynamic.weight.descriptors<- neat.dynamic.weights %>%
+  select(V51, V52, V53, V54)
+
+output.node<- c('Forwards', 'Backwards', 'TurnClock', 'TurnCounter')
+nonZero<- colSums(dynamic.weight.descriptors != 0)
+zero<- colSums(dynamic.weight.descriptors == 0)
+positive<- colSums(dynamic.weight.descriptors > 0)
+negative<- colSums(dynamic.weight.descriptors < 0)
+strong<- colSums(dynamic.weight.descriptors > 1)
+
+dynamic.w.summary<- data.frame(output.node, nonZero, zero, positive, negative, strong)
+
+
+  
+static.weight.descriptors<- neat.static.weights %>%
+  select(V51, V52, V53, V54)
+output.node<- c('Forwards', 'Backwards', 'TurnClock', 'TurnCounter')
+nonZero<- colSums(static.weight.descriptors != 0)
+zero<- colSums(static.weight.descriptors == 0)
+positive<- colSums(static.weight.descriptors > 0)
+negative<- colSums(static.weight.descriptors < 0)
+strong<- colSums(static.weight.descriptors > 1)
+
+static.w.summary<- data.frame(output.node, nonZero, zero, positive, negative, strong)
+
+write.csv(static.w.summary,"finalists/neat_static_w_sum.csv", row.names = T)
+write.csv(dynamic.w.summary,"finalists/neat_dynamic_w_sum.csv", row.names = T)
+
+```

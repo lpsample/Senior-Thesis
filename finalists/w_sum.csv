@@ -1,0 +1,16 @@
+the total number of possible circuits in the NN is the product of the number of nodes in each layer,,,,,,,,,
+,ANN,,Np,Wmax,NonZero (Na),wi/wmax,np-na/np-1,,fns
+,,Static,20,1,14,11.5,0.315789474,3.631578947,-2.631578947
+,,Dynamic,20,1,17,12,0.157894737,1.894736842,-0.894736842
+,,,,,,,,,
+,NEAT,Static,104,1.928090714,28,49.5469098,0.737864078,36.5588849,-35.5588849
+,,Dynamic,144,2.1014229,41,102.9753902,0.72027972,74.17108525,-73.17108525
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,NEAT,Static,Dynamic,,Np,,,,
+,Input,5,5,,104,,,,
+,Hidden,26,37,,,,,,
+,Output,4,4,,,,,,
+,,,,,,,,,
+,,104,148,,,,,,

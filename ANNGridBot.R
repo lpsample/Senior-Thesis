@@ -31,6 +31,9 @@ static.ann<- do.static.run()
 plotState <- T
 runBot(static.ann$best.agent.weights,1)
 
+static.ann$best.agent.weights
+write.csv(static.ann$best.agent.weights,"finalists/ann_static_weights.csv", row.names = T)
+
 
 #=====================================
 #dynamic.run<- run(2)
@@ -50,9 +53,16 @@ do.dynamic.run<- function(){
 
 
 dynamic.ann<- do.dynamic.run()
+
 dynamic.ann$best.agent.weights
+
+plot.num <- 1
 plotState <- T
 runBot(dynamic.ann$best.agent.weights,2)
+
+dynamic.ann$best.agent.weights
+write.csv(static.ann$best.agent.weights,"finalists/ann_dynamic_weights.csv", row.names = T)
+
 
 #dynamic.run
 x<-0
