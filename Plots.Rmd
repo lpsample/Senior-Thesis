@@ -187,3 +187,19 @@ write.csv(static.w.summary,"finalists/neat_static_w_sum.csv", row.names = T)
 write.csv(dynamic.w.summary,"finalists/neat_dynamic_w_sum.csv", row.names = T)
 
 ```
+LightGrid Vis
+```{r}
+
+d1
+write.csv(d1,"finalists/5x20.csv", row.names = T)
+d2
+write.csv(d2,"finalists/4x25.csv", row.names = T)
+d3
+write.csv(d3,"finalists/10x10.csv", row.names = T)
+d4<- makeGrids(2)
+d4
+write.csv(d4,"finalists/24x4.csv", row.names = T)
+d5<- makeGrids(2)
+d5
+write.csv(d5,"finalists/20x5.csv", row.names = T)
+```
