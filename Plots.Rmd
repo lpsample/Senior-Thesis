@@ -65,9 +65,9 @@ ggplot(ann.dynamic, aes(x=generation, y= meanFitness)) +
   geom_point()+
    geom_errorbar(aes(ymin=ann.dynamic$minFitness, ymax=ann.dynamic$maxFitness), width = .2)+
   ylim(0, 20000)+
-  theme_bw()+
+  theme_classic()+
   geom_smooth(method='lm', formula= y~x)+
-  labs(title= "ANN Dynamic (Mean), 100 Generations", x= "Generation", y= "Fitness")
+  labs(title= "FT Dynamic (Mean), 100 Generations", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
@@ -78,7 +78,7 @@ ggplot(ann.dynamic, aes(x=generation, y= medianFitness)) +
   ylim(0, 20000)+
   theme_classic()+
   geom_smooth(method='lm', formula= y~x)+
-  labs(title= "ANN Dynamic (Median), 100 Generations", x= "Generation", y= "Fitness")
+  labs(title= "FT Dynamic (Median), 100 Generations", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
@@ -89,7 +89,7 @@ ggplot(ann.static, aes(x=generation, y= meanFitness)) +
   ylim(0, 20000)+
   theme_classic()+
   geom_smooth(method='lm', formula= y~x)+
-  labs(title= "ANN Static (Mean), 100 Generations", x= "Generation", y= "Fitness")
+  labs(title= "FT Static (Mean), 100 Generations", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
@@ -100,7 +100,7 @@ ggplot(ann.static, aes(x=generation, y= medianFitness)) +
   ylim(0, 20000)+
   theme_classic()+
   geom_smooth(method='lm', formula= y~x)+
-  labs(title= "ANN Static (Median), 100 Generations", x= "Generation", y= "Fitness")
+  labs(title= "FT Static (Median), 100 Generations", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
@@ -111,9 +111,9 @@ ggplot(ann.static.500, aes(x=generation, y= meanFitness)) +
   geom_point()+
    geom_errorbar(aes(ymin=ann.static.500$minFitness, ymax=ann.static.500$maxFitness), width = .1)+
  ylim(0, 20000)+
-  theme_bw()+
+  theme_classic()+
   geom_smooth(method='lm', formula= y~x)+
-  labs(title= "ANN Static (Mean), 500 Generations", x= "Generation", y= "Fitness")
+  labs(title= "FT Static (Mean), 500 Generations", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
@@ -125,7 +125,7 @@ ggplot(ann.static.500, aes(x=generation, y= medianFitness)) +
  ylim(0, 20000)+
   theme_bw()+
   geom_smooth(method='lm', formula= y~x)+
-  labs(title= "ANN Static (Median), 500 Generations", x= "Generation", y= "Fitness")
+  labs(title= "FT Static (Median), 500 Generations", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
@@ -136,9 +136,9 @@ ggplot(ann.dynamic.500, aes(x=generation, y= meanFitness)) +
   geom_point()+
    geom_errorbar(aes(ymin=ann.dynamic.500$minFitness, ymax=ann.dynamic.500$maxFitness), width = .1)+
  ylim(0, 20000)+
-  theme_bw()+
+  theme_classic()+
   geom_smooth(method='lm', formula= y~x)+
-  labs(title= "ANN Dynamic (Mean), 500 Generations", x= "Generation", y= "Fitness")
+  labs(title= "FT Dynamic (Mean), 500 Generations", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
@@ -149,7 +149,7 @@ ggplot(ann.dynamic.500, aes(x=generation, y= medianFitness)) +
  ylim(0, 20000)+
   theme_bw()+
   geom_smooth(method='lm', formula= y~x)+
-  labs(title= "ANN Dynamic (Median), 500 Generations", x= "Generation", y= "Fitness")
+  labs(title= "FT Dynamic (Median), 500 Generations", x= "Generation", y= "Fitness")
 ```
 
 ```{r}
@@ -204,4 +204,35 @@ d5
 write.csv(d5,"finalists/20x5.csv", row.names = T)
 
 makeGrids(1)
+```
+Statistical Tests
+```{r}
+#mean between neats
+neat.t.mean<- t.test(neat.dynamic$meanFitness, neat.static$meanFitness, alternative = "greater")
+neat.t.mean
+
+#calculating ranges
+neat.static$range<- neat.static$maxFitness-neat.static$minFitness
+neat.dynamic$range<- neat.dynamic$maxFitness-neat.dynamic$minFitness
+
+#Significantly different ranges
+neat.t.range <- t.test(neat.dynamic$range, neat.static$range, alternative = "greater")
+neat.t.range
+
+#correlation of fitness and generation
+?cor()
+neat.static.cor<- cor(neat.static$generation, neat.static$meanFitness)
+
+neat.dynamic.cor<- cor(neat.dynamic$generation, neat.dynamic$meanFitness)
+
+#fixed topology
+ft.t.mean <- t.test(ann.dynamic$meanFitness, ann.static$meanFitness, alternative = "less")
+ft.t.mean
+
+ann.static$range<- ann.static$maxFitness-ann.static$minFitness
+ann.dynamic$range<- ann.dynamic$maxFitness-ann.dynamic$minFitness
+
+ft.t.range<- t.test(ann.dynamic$range, ann.static$range, alternative="two.sided")
+ft.t.range
+
 ```
