@@ -1,0 +1,893 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={GridBot Model},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{GridBot Model}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\#GridBot \#\#Lindsey Sample and Josh DeLeew, 2019
+
+Grid world: A matrix of rows and colums, each square has a light value,
+can be occupied by an agent, and can have an obstacle 2 layers of
+matrix: light and obstacle + agent light: 0 = dark, 255= max light (or
+0-1)
+
+light scaline function: 255\emph{exp(-distance}.5) falls off, if we
+multiply d by a number less than one, drops off slower more than 1,
+drops off faster
+
+Here, we make our light grid and obstacle grid. If 1 is entered, it will
+make a static environment. If 2, dynamic Dynamic picks a row and column
+number that = 100 total squares and places 5 random obstacles
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{makeLightGrid<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(numRows, numCols)\{}
+\NormalTok{  lightGrid<-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, numRows, numCols)}
+  \ControlFlowTok{for}\NormalTok{(x }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{numCols)\{}
+    \ControlFlowTok{for}\NormalTok{(y }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{numRows)\{}
+      \CommentTok{#puts in middle of grid}
+\NormalTok{      distance <-}\StringTok{ }\KeywordTok{sqrt}\NormalTok{((}\DecValTok{0}\OperatorTok{-}\NormalTok{y)}\OperatorTok{^}\DecValTok{2}\OperatorTok{+}\NormalTok{((numCols}\OperatorTok{+}\DecValTok{1}\NormalTok{)}\OperatorTok{/}\DecValTok{2}\OperatorTok{-}\NormalTok{x)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\NormalTok{      lightGrid[y,x] <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\DecValTok{255}\OperatorTok{*}\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\NormalTok{distance}\OperatorTok{*}\NormalTok{.}\DecValTok{5}\NormalTok{))}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \KeywordTok{return}\NormalTok{ (lightGrid)}
+\NormalTok{\}}
+
+\CommentTok{#takes in 1 or 2 (static or dynamic)}
+\NormalTok{makeGrids<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x)\{}
+  \CommentTok{#if static, 10x10}
+  \ControlFlowTok{if}\NormalTok{ (x }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{)\{}
+\NormalTok{    numRows <-}\StringTok{ }\DecValTok{10}
+\NormalTok{    numCols <-}\StringTok{ }\DecValTok{10}
+\NormalTok{  \}}
+  \CommentTok{#if dynamic, pick from dynamic nums list}
+  \ControlFlowTok{if}\NormalTok{ (x}\OperatorTok{==}\DecValTok{2}\NormalTok{)\{}
+\NormalTok{    d<-}\StringTok{ }\KeywordTok{dynamicNums}\NormalTok{()}
+\NormalTok{  numRows <-}\StringTok{ }\NormalTok{d[}\DecValTok{1}\NormalTok{]}
+\NormalTok{  numCols <-}\StringTok{ }\NormalTok{d[}\DecValTok{2}\NormalTok{]}
+\NormalTok{  \}}
+  \CommentTok{#make light grid with appropriate dimesions, add barriers along edges}
+\NormalTok{  lightGrid<-}\StringTok{ }\KeywordTok{makeLightGrid}\NormalTok{(numRows, numCols)}
+\NormalTok{  obsGrid<-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, numRows, numCols)}
+\NormalTok{  obsGrid[}\DecValTok{1}\NormalTok{,]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{  obsGrid[,}\DecValTok{1}\NormalTok{]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{  obsGrid[numRows,]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{  obsGrid[,numCols] <-}\DecValTok{1}
+  \CommentTok{#if static, plus barrier in center}
+  \ControlFlowTok{if}\NormalTok{(x}\OperatorTok{==}\DecValTok{1}\NormalTok{)\{}
+\NormalTok{    obsGrid[}\KeywordTok{round}\NormalTok{(numRows}\OperatorTok{/}\DecValTok{2}\NormalTok{), }\KeywordTok{round}\NormalTok{(numCols}\OperatorTok{/}\DecValTok{2}\NormalTok{)]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{    obsGrid[}\KeywordTok{round}\NormalTok{(numRows}\OperatorTok{/}\DecValTok{2}\NormalTok{)}\OperatorTok{+}\DecValTok{1}\NormalTok{, }\KeywordTok{round}\NormalTok{(numCols}\OperatorTok{/}\DecValTok{2}\NormalTok{)]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{    obsGrid[}\KeywordTok{round}\NormalTok{(numRows}\OperatorTok{/}\DecValTok{2}\NormalTok{), }\KeywordTok{round}\NormalTok{(numCols}\OperatorTok{/}\DecValTok{2}\NormalTok{)}\OperatorTok{+}\DecValTok{1}\NormalTok{]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{    obsGrid[}\KeywordTok{round}\NormalTok{(numRows}\OperatorTok{/}\DecValTok{2}\NormalTok{)}\OperatorTok{-}\DecValTok{1}\NormalTok{, }\KeywordTok{round}\NormalTok{(numCols}\OperatorTok{/}\DecValTok{2}\NormalTok{)]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{    obsGrid[}\KeywordTok{round}\NormalTok{(numRows}\OperatorTok{/}\DecValTok{2}\NormalTok{), }\KeywordTok{round}\NormalTok{(numCols}\OperatorTok{/}\DecValTok{2}\NormalTok{)}\OperatorTok{-}\DecValTok{1}\NormalTok{]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{  \} }
+  \CommentTok{#if dynamic, placing 5 obstacles randomly}
+  \ControlFlowTok{if}\NormalTok{ (x}\OperatorTok{==}\DecValTok{2}\NormalTok{)\{}
+    \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{)\{}
+\NormalTok{    r<-}\StringTok{ }\KeywordTok{sample}\NormalTok{(numRows}\DecValTok{-1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    c<-}\StringTok{ }\KeywordTok{sample}\NormalTok{(numCols}\DecValTok{-1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    obsGrid[r, c]<-}\StringTok{ }\DecValTok{1}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \CommentTok{#place bot in spot right above barrier in center (rounded to avoid decimal problems)}
+\NormalTok{    obsGrid[numRows}\DecValTok{-1}\NormalTok{, }\KeywordTok{round}\NormalTok{(numCols}\OperatorTok{/}\DecValTok{2}\NormalTok{)]<-}\StringTok{ }\DecValTok{0}
+    \KeywordTok{return}\NormalTok{(}\KeywordTok{list}\NormalTok{(obsGrid, lightGrid))}
+\NormalTok{\}}
+\CommentTok{#gets random numbers that make a 100 square grid}
+\NormalTok{dynamicNums<-}\ControlFlowTok{function}\NormalTok{()\{}
+  \CommentTok{#cant have 100x1 and 2x50, no obstacle options}
+\NormalTok{  listy<-}\StringTok{ }\KeywordTok{list}\NormalTok{( }\KeywordTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{,}\DecValTok{5}\NormalTok{), }\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{20}\NormalTok{), }\KeywordTok{c}\NormalTok{(}\DecValTok{10}\NormalTok{,}\DecValTok{10}\NormalTok{), }\KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{25}\NormalTok{), }\KeywordTok{c}\NormalTok{(}\DecValTok{25}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\NormalTok{  listNums<-}\StringTok{ }\NormalTok{(}\KeywordTok{sample}\NormalTok{(listy, }\DecValTok{1}\NormalTok{))}
+\NormalTok{  pairNums<-}\StringTok{ }\NormalTok{listNums[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  nRows<-}\StringTok{ }\NormalTok{pairNums[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  nCols <-}\StringTok{ }\NormalTok{pairNums[[}\DecValTok{2}\NormalTok{]]}
+  \KeywordTok{return}\NormalTok{ (}\KeywordTok{c}\NormalTok{(nRows, nCols))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Agent traverses block matrix blank indicates no block 1 indicates block
+0 = agent is in this spot agent cannot be on a block
+
+functions: (determined by NN) turn in place to left, turn to right, step
+forward, step backward
+
+move: takes state as argument changes grid or cardinal so agent is in
+new spot return new grid
+
+moveForward: moves in the direction bot is facing one space forward
+
+cardinal: an ordered pair that designates next move y, x (rows, col)
+(1,0) -\textgreater{} down (0, 1) -\textgreater{} right (-1,0)
+-\textgreater{} up (0, -1) -\textgreater{} left
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{moveForward <-}\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{  cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+  
+\NormalTok{  aCur<-}\StringTok{ }\KeywordTok{which}\NormalTok{(obsGrid}\OperatorTok{==}\DecValTok{0}\NormalTok{, }\DataTypeTok{arr.ind=}\OtherTok{TRUE}\NormalTok{)}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{cardinal]))\{}
+\NormalTok{    obsGrid[aCur]<-}\StringTok{ }\OtherTok{NA}
+\NormalTok{    obsGrid[aCur}\OperatorTok{+}\NormalTok{cardinal]<-}\StringTok{ }\DecValTok{0}
+\NormalTok{  \}}
+\NormalTok{  state[[}\DecValTok{2}\NormalTok{]] <-}\StringTok{ }\NormalTok{obsGrid}
+  \KeywordTok{return}\NormalTok{(state)}
+\NormalTok{\}}
+\NormalTok{moveBackward <-}\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{  cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{  aCur<-}\StringTok{ }\KeywordTok{which}\NormalTok{(obsGrid}\OperatorTok{==}\DecValTok{0}\NormalTok{, }\DataTypeTok{arr.ind=}\OtherTok{TRUE}\NormalTok{)}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{-}\NormalTok{cardinal]))\{}
+\NormalTok{    obsGrid[aCur]<-}\StringTok{ }\OtherTok{NA}
+\NormalTok{    obsGrid[aCur}\OperatorTok{-}\NormalTok{cardinal]<-}\StringTok{ }\DecValTok{0}
+\NormalTok{  \}}
+\NormalTok{  state[[}\DecValTok{2}\NormalTok{]] <-}\StringTok{ }\NormalTok{obsGrid}
+   \KeywordTok{return}\NormalTok{(state)}
+\NormalTok{\}}
+
+\NormalTok{turnClock <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{  cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+  \CommentTok{#if down, turn left}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)))\{}
+\NormalTok{    cardinal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\OperatorTok{-}\DecValTok{1}\NormalTok{)}
+\NormalTok{  \}}
+  \CommentTok{#if left, turn up}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\OperatorTok{-}\DecValTok{1}\NormalTok{)))\{}
+\NormalTok{    cardinal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{  \}}
+  \CommentTok{#if up, turn right}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)))\{}
+\NormalTok{    cardinal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)}
+\NormalTok{  \}}
+   \CommentTok{#if right, turn down}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)))\{}
+\NormalTok{    cardinal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{  state[[}\DecValTok{1}\NormalTok{]] <-}\StringTok{ }\NormalTok{cardinal}
+  \KeywordTok{return}\NormalTok{(state)}
+\NormalTok{\}}
+\NormalTok{turnCounter <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{  cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+  \CommentTok{#if left, turn down}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\OperatorTok{-}\DecValTok{1}\NormalTok{)))\{}
+\NormalTok{    cardinal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{  \}}
+  \CommentTok{#if up turn left}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)))\{}
+\NormalTok{    cardinal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\OperatorTok{-}\DecValTok{1}\NormalTok{)}
+\NormalTok{  \}}
+  \CommentTok{#if right, turn up}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)))\{}
+\NormalTok{    cardinal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{  \}}
+   \CommentTok{#if down, turn right}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)))\{}
+\NormalTok{    cardinal <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{  state[[}\DecValTok{1}\NormalTok{]] <-}\StringTok{ }\NormalTok{cardinal}
+  \KeywordTok{return}\NormalTok{(state)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\#light function get light takes in obsGrid, finds the position of the
+bot (aCur) based on the cardinal, it takes the average of the space its
+in, the space in front, and the two to the right and left for the right
+and left sensors respectively. The sum of r and l is the number added to
+the accumulator
+
+! {[}LDR{]} (LDR.jpg)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{down <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{right<-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{up<-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{left<-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{-1}\NormalTok{)}
+
+\NormalTok{rightLight<-}\StringTok{ }\DecValTok{0}
+\NormalTok{leftLight<-}\StringTok{ }\DecValTok{0}
+
+\NormalTok{getRightLight<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{  cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{  lightGrid <-state[[}\DecValTok{3}\NormalTok{]]}
+  
+\NormalTok{  aCur<-}\StringTok{ }\KeywordTok{which}\NormalTok{(obsGrid}\OperatorTok{==}\DecValTok{0}\NormalTok{, }\DataTypeTok{arr.ind=}\OtherTok{TRUE}\NormalTok{)}
+  \CommentTok{#up}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{up))\{}
+\NormalTok{    rightLight<-}\StringTok{ }\KeywordTok{mean}\NormalTok{(lightGrid[aCur], lightGrid[aCur}\OperatorTok{+}\NormalTok{cardinal], lightGrid[aCur}\OperatorTok{+}\NormalTok{right], lightGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{right])}
+\NormalTok{       \}}
+  
+  \CommentTok{#right}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{right))\{}
+\NormalTok{      rightLight<-}\StringTok{ }\KeywordTok{mean}\NormalTok{(lightGrid[aCur], lightGrid[aCur}\OperatorTok{+}\NormalTok{cardinal], lightGrid[aCur}\OperatorTok{+}\NormalTok{up], lightGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{right])}
+\NormalTok{       \}}
+  \CommentTok{#left}
+    \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{left))\{}
+\NormalTok{    rightLight<-}\StringTok{ }\KeywordTok{mean}\NormalTok{(lightGrid[aCur], lightGrid[aCur}\OperatorTok{+}\NormalTok{cardinal], lightGrid[aCur}\OperatorTok{+}\NormalTok{up], lightGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{left])}
+\NormalTok{      \}}
+  \CommentTok{#down}
+    \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{down))\{}
+\NormalTok{    rightLight<-}\StringTok{ }\KeywordTok{mean}\NormalTok{(lightGrid[aCur], lightGrid[aCur}\OperatorTok{+}\NormalTok{cardinal], lightGrid[aCur}\OperatorTok{+}\NormalTok{right], lightGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{right])}
+\NormalTok{     \}}
+  
+ 
+  
+  \KeywordTok{return}\NormalTok{(rightLight)}
+\NormalTok{\}}
+
+\NormalTok{getLeftLight<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{  cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{  lightGrid <-state[[}\DecValTok{3}\NormalTok{]]}
+  
+\NormalTok{  aCur<-}\StringTok{ }\KeywordTok{which}\NormalTok{(obsGrid}\OperatorTok{==}\DecValTok{0}\NormalTok{, }\DataTypeTok{arr.ind=}\OtherTok{TRUE}\NormalTok{)}
+  \CommentTok{#up}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{up))\{}
+\NormalTok{  leftLight<-}\StringTok{ }\KeywordTok{mean}\NormalTok{(lightGrid[aCur], lightGrid[aCur}\OperatorTok{+}\NormalTok{cardinal], lightGrid[aCur}\OperatorTok{+}\NormalTok{left], lightGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{left])}
+\NormalTok{  \}}
+  
+  \CommentTok{#right}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{right))\{}
+\NormalTok{     leftLight<-}\StringTok{ }\KeywordTok{mean}\NormalTok{(lightGrid[aCur], lightGrid[aCur}\OperatorTok{+}\NormalTok{cardinal], lightGrid[aCur}\OperatorTok{+}\NormalTok{down], lightGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{right])}
+\NormalTok{  \}}
+  \CommentTok{#left}
+    \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{left))\{}
+\NormalTok{leftLight<-}\StringTok{ }\KeywordTok{mean}\NormalTok{(lightGrid[aCur], lightGrid[aCur}\OperatorTok{+}\NormalTok{cardinal], lightGrid[aCur}\OperatorTok{+}\NormalTok{down], lightGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{left])}
+\NormalTok{    \}}
+  \CommentTok{#down}
+    \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{down))\{}
+\NormalTok{   leftLight<-}\StringTok{ }\KeywordTok{mean}\NormalTok{(lightGrid[aCur], lightGrid[aCur}\OperatorTok{+}\NormalTok{cardinal], lightGrid[aCur}\OperatorTok{+}\NormalTok{left], lightGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{left])}
+\NormalTok{  \}}
+  
+  \KeywordTok{return}\NormalTok{(leftLight)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#\#IRs returns the distance of the closest block
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{leftIR<-}\StringTok{ }\DecValTok{0}
+\NormalTok{rightIR<-}\DecValTok{0}
+
+\NormalTok{getRightIR<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{    cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{  lightGrid <-state[[}\DecValTok{3}\NormalTok{]]}
+\NormalTok{  aCur<-}\StringTok{ }\KeywordTok{which}\NormalTok{(obsGrid}\OperatorTok{==}\DecValTok{0}\NormalTok{, }\DataTypeTok{arr.ind=}\OtherTok{TRUE}\NormalTok{)}
+  \CommentTok{#up}
+  \CommentTok{#checks for both Right  IR, they include the two spaces in front, sets to distance between,}
+  \CommentTok{# first checks before, then to right, then up up, then up up right}
+  \CommentTok{#else if because we check in order}
+  
+  
+  \CommentTok{#up direction}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{up))\{ }
+    \CommentTok{#if item in spot 1 (up), IR = distance}
+    \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up]))\{}
+\NormalTok{      rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up))[}\DecValTok{1}\NormalTok{]}
+      \CommentTok{#if item in spot 2 (right), IR = distance}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{      rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+      \CommentTok{#if item in spot 3, IR= distance}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{up]))\{}
+\NormalTok{      rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{up))[}\DecValTok{1}\NormalTok{]}
+      \CommentTok{#if item in spot 4, IR = distance}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{      rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    \}\}}
+  \CommentTok{#down direction}
+  \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\NormalTok{down))\{}
+    \CommentTok{#spot 1}
+    \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down]))\{}
+\NormalTok{         rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down))[}\DecValTok{1}\NormalTok{]}
+         \CommentTok{#spot 2}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{       rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+       \CommentTok{#spot 3}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{down]))\{}
+\NormalTok{    rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{down))[}\DecValTok{1}\NormalTok{]}
+    \CommentTok{#spot 4}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{      rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  
+  \CommentTok{#right direction}
+  \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\NormalTok{right))\{}
+    \CommentTok{#spot 1}
+    \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{        rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+         \CommentTok{#spot 2}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{       rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+       \CommentTok{#spot 3}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{right}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{    rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{right }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+    \CommentTok{#spot 4}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{right}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{      rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{right }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\NormalTok{left))\{}
+    \CommentTok{#spot 1}
+    \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{         rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+         \CommentTok{#spot 2}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{       rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+       \CommentTok{#spot 3}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{left}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{    rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{left }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+    \CommentTok{#spot 4}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{left}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{      rightIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{left }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  
+  \KeywordTok{return}\NormalTok{ (}\KeywordTok{abs}\NormalTok{(rightIR))}
+\NormalTok{\}}
+    
+    
+\NormalTok{getLeftIR<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{    cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{  lightGrid <-state[[}\DecValTok{3}\NormalTok{]]}
+  
+\NormalTok{  aCur<-}\StringTok{ }\KeywordTok{which}\NormalTok{(obsGrid}\OperatorTok{==}\DecValTok{0}\NormalTok{, }\DataTypeTok{arr.ind=}\OtherTok{TRUE}\NormalTok{)}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{all}\NormalTok{(cardinal}\OperatorTok{==}\StringTok{ }\NormalTok{up))\{ }
+    \CommentTok{#if item in spot 1 (up), IR = distance}
+    \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up]))\{}
+\NormalTok{      leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up))[}\DecValTok{1}\NormalTok{]}
+      \CommentTok{#if item in spot 2 (left), IR = distance}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{      leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+      \CommentTok{#if item in spot 3, IR= distance}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{up]))\{}
+\NormalTok{     leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{up))[}\DecValTok{1}\NormalTok{]}
+      \CommentTok{#if item in spot 4, IR = distance}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{      leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    \}\}}
+   \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\NormalTok{down))\{}
+    \CommentTok{#spot 1}
+    \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down]))\{}
+\NormalTok{         leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down))[}\DecValTok{1}\NormalTok{]}
+         \CommentTok{#spot 2}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{       leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+       \CommentTok{#spot 3}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{down]))\{}
+\NormalTok{    leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{down))[}\DecValTok{1}\NormalTok{]}
+    \CommentTok{#spot 4}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{      leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    \}}
+\NormalTok{   \}}
+  \CommentTok{#right}
+  \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\NormalTok{right))\{}
+    \CommentTok{#spot 1}
+    \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{         leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+         \CommentTok{#spot 2}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{       leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+       \CommentTok{#spot 3}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{right}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{    leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{right }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+    \CommentTok{#spot 4}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{up}\OperatorTok{+}\NormalTok{right}\OperatorTok{+}\NormalTok{right]))\{}
+\NormalTok{      leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{up }\OperatorTok{+}\StringTok{ }\NormalTok{right }\OperatorTok{+}\StringTok{ }\NormalTok{right))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    \}}
+\NormalTok{  \}}
+
+     \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{all}\NormalTok{(cardinal }\OperatorTok{==}\StringTok{ }\NormalTok{left))\{}
+    \CommentTok{#spot 1}
+    \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{        leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+         \CommentTok{#spot 2}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{       leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+       \CommentTok{#spot 3}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{left}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{   leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{left }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+    \CommentTok{#spot 4}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{down}\OperatorTok{+}\NormalTok{left}\OperatorTok{+}\NormalTok{left]))\{}
+\NormalTok{      leftIR <-}\StringTok{ }\KeywordTok{dist}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(aCur, aCur }\OperatorTok{+}\StringTok{ }\NormalTok{down }\OperatorTok{+}\StringTok{ }\NormalTok{left }\OperatorTok{+}\StringTok{ }\NormalTok{left))[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    \}}
+\NormalTok{  \}   }
+ 
+  \KeywordTok{return}\NormalTok{(}\KeywordTok{abs}\NormalTok{(leftIR))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#\#Bumper returns 1 if there is an object in front of the bot
+(depends on where it is facing)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bump <-}\StringTok{ }\DecValTok{0}
+\NormalTok{getBump<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{      cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{  lightGrid <-state[[}\DecValTok{3}\NormalTok{]]}
+  
+\NormalTok{  aCur<-}\StringTok{ }\KeywordTok{which}\NormalTok{(obsGrid}\OperatorTok{==}\DecValTok{0}\NormalTok{, }\DataTypeTok{arr.ind=}\OtherTok{TRUE}\NormalTok{)}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{cardinal]))\{}
+\NormalTok{    bump<-}\DecValTok{0}
+\NormalTok{  \}}
+  \ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(obsGrid[aCur}\OperatorTok{+}\NormalTok{cardinal]))\{}
+\NormalTok{    bump<-}\DecValTok{1}
+\NormalTok{  \}}
+  
+
+  \KeywordTok{return}\NormalTok{(bump)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#\#Update sensors
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{updateInput<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{    leftIR<-}\StringTok{ }\KeywordTok{getLeftIR}\NormalTok{(state)}
+\NormalTok{    rightIR<-}\StringTok{ }\KeywordTok{getRightIR}\NormalTok{(state)}
+\NormalTok{    leftLight<-}\StringTok{ }\KeywordTok{getLeftLight}\NormalTok{(state)}
+\NormalTok{    rightLight<-}\StringTok{ }\KeywordTok{getRightLight}\NormalTok{(state)}
+\NormalTok{    bump<-}\StringTok{ }\KeywordTok{getBump}\NormalTok{(state)}
+    
+\NormalTok{    input<-}\StringTok{ }\KeywordTok{c}\NormalTok{(leftLight,leftIR, bump, rightIR, rightLight) }
+    \KeywordTok{return}\NormalTok{(input)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#\#MakeMove
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{makeMove<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(weights, state)\{}
+\NormalTok{  cardinal <-}\StringTok{ }\NormalTok{state[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{state[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{  lightGrid <-state[[}\DecValTok{3}\NormalTok{]]}
+  
+\NormalTok{  input<-}\StringTok{ }\KeywordTok{updateInput}\NormalTok{(state)}
+  
+\NormalTok{  output<-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+  \CommentTok{#weights<- matrix(NA,length(input), length(output))}
+  
+  \CommentTok{#matrix and input vector, matrix multiplication (dot product of every column)}
+  \CommentTok{#OR for loop, dot product (sum, vector * vector)}
+  
+  \CommentTok{#print(weights)}
+  
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(output))\{}
+\NormalTok{      output[i]<-}\StringTok{ }\DecValTok{1} \OperatorTok{/}\StringTok{ }\NormalTok{(}\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\KeywordTok{sum}\NormalTok{(input}\OperatorTok{*}\NormalTok{weights[,i])))}
+    
+\NormalTok{  \}}
+\NormalTok{  sum.output<-}\StringTok{ }\KeywordTok{sum}\NormalTok{(output)}
+\NormalTok{  adj.output <-}\StringTok{ }\NormalTok{output}\OperatorTok{/}\NormalTok{sum.output}
+  
+  
+\NormalTok{  action <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\KeywordTok{c}\NormalTok{(moveForward,moveBackward, turnClock, turnCounter),}\DecValTok{1}\NormalTok{,  }\DataTypeTok{prob=}\NormalTok{adj.output)}
+\NormalTok{  new.state <-}\StringTok{ }\NormalTok{action[[}\DecValTok{1}\NormalTok{]](state)}
+  
+\NormalTok{  state <-}\StringTok{ }\NormalTok{new.state}
+  
+  
+  
+\CommentTok{#Update State: Takes data of gen's run in Grid, Gives next Genome}
+  \ControlFlowTok{if}\NormalTok{(plotState)\{}
+\NormalTok{    p <-}\StringTok{ }\KeywordTok{gridBotANN.PlotState}\NormalTok{(state)}
+    \KeywordTok{ggsave}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(}\StringTok{'plots/'}\NormalTok{,plot.num,}\StringTok{'.png'}\NormalTok{), p, }\DataTypeTok{device =} \KeywordTok{png}\NormalTok{())}
+\NormalTok{    plot.num <<-}\StringTok{ }\NormalTok{plot.num }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+    \KeywordTok{dev.off}\NormalTok{()}
+\NormalTok{  \}}
+  
+  \KeywordTok{return}\NormalTok{(new.state)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#\#Making weights and setting up
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{makeRandWeights <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{()\{}
+\NormalTok{  output<-}\StringTok{ }\KeywordTok{c}\NormalTok{(moveForward, moveBackward, turnClock, turnCounter)}
+\NormalTok{  weight.options<-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{, }\FloatTok{-.5}\NormalTok{, }\DecValTok{0}\NormalTok{, }\FloatTok{.5}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{  weights<-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{,}\DecValTok{5}\NormalTok{, }\KeywordTok{length}\NormalTok{(output))}
+  \ControlFlowTok{for}\NormalTok{ (row }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(weights))\{}
+    \ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{ncol}\NormalTok{(weights))\{}
+\NormalTok{    weights[row,col] <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(weight.options, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \KeywordTok{return}\NormalTok{ (weights)}
+\NormalTok{\}}
+
+
+\NormalTok{setUp<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x)\{}
+\NormalTok{  grids<-}\StringTok{ }\KeywordTok{makeGrids}\NormalTok{(x)}
+\NormalTok{  obsGrid <-}\StringTok{ }\NormalTok{grids[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  lightGrid <-}\StringTok{ }\NormalTok{grids[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{  state <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+    \DataTypeTok{cardinal =} \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{),}
+\NormalTok{    obsGrid,}
+\NormalTok{    lightGrid}
+\NormalTok{  )}
+  \CommentTok{#weights <- makeRandWeights()}
+  \KeywordTok{return}\NormalTok{(state)}
+\NormalTok{\}}
+
+\CommentTok{# t<-setUp(2)}
+\CommentTok{# }
+\CommentTok{# test1.state <- setUp(2)}
+\CommentTok{# weights <- makeRandWeights()}
+\CommentTok{# for(i in 1:100)\{}
+\CommentTok{#   test1.state <- makeMove(weights,test1.state)}
+\CommentTok{# \}}
+\end{Highlighting}
+\end{Shaded}
+
+upate sensor vals
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# N.moves <-100}
+\CommentTok{# N.bots <- 10}
+\CommentTok{# N.gen <- 100}
+
+\CommentTok{#runs bots with 100 moves}
+
+\NormalTok{runBot <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(weights, x)\{}
+
+  \CommentTok{# make a starting environment / state}
+\NormalTok{  state <-}\StringTok{ }\KeywordTok{setUp}\NormalTok{(x)}
+\NormalTok{  total.light <-}\StringTok{ }\DecValTok{0}
+  \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{N.moves)\{}
+\NormalTok{    state <-}\StringTok{ }\KeywordTok{makeMove}\NormalTok{(weights, state)}
+\NormalTok{    total.light <-}\StringTok{ }\NormalTok{total.light }\OperatorTok{+}\StringTok{ }\KeywordTok{getLeftLight}\NormalTok{(state) }\OperatorTok{+}\StringTok{ }\KeywordTok{getRightLight}\NormalTok{(state)}
+\NormalTok{  \}}
+  
+  \KeywordTok{return}\NormalTok{(total.light)}
+\NormalTok{\}}
+
+\CommentTok{#runBot(makeRandWeights(), 2)}
+  
+\NormalTok{runGeneration <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(genomes, x) \{}
+\NormalTok{  fitness.vals <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{bot.number=}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DataTypeTok{fitness=}\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{))}
+  \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{N.bots)\{}
+   \CommentTok{#print(genomes[[i]])}
+    \CommentTok{#print(i)}
+\NormalTok{    fitness <-}\StringTok{ }\KeywordTok{runBot}\NormalTok{(genomes[[i]], x)}
+\NormalTok{    fitness.vals[i, }\StringTok{'fitness'}\NormalTok{] <-}\StringTok{ }\NormalTok{fitness}
+   
+\NormalTok{    \}}
+  \KeywordTok{return}\NormalTok{(fitness.vals)}
+  \CommentTok{# runBot for each genome in the data frame}
+\NormalTok{\}}
+
+
+\NormalTok{createGeneration <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(N.bots)\{}
+\NormalTok{  genomes <-}\StringTok{ }\KeywordTok{list}\NormalTok{()}
+  \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{N.bots)\{}
+    \CommentTok{#setUp(10,10)}
+\NormalTok{    genomes[[i]] <-}\StringTok{ }\KeywordTok{makeRandWeights}\NormalTok{()    }
+\NormalTok{  \}}
+  \KeywordTok{return}\NormalTok{(genomes)}
+\NormalTok{\}}
+
+\CommentTok{# test1.state <- setUp(10, 10)}
+\CommentTok{# weights <- makeRandWeights()}
+\CommentTok{# for(i in 1:100)\{}
+\CommentTok{#   test1.state <- makeMove(weights,test1.state)}
+\CommentTok{# \}}
+
+
+
+
+
+\CommentTok{#takes in what runGeneration returns}
+\NormalTok{next.genomes<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(old.gen, old.genomes)\{}
+  
+\NormalTok{  next.generation <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(old.gen}\OperatorTok{$}\NormalTok{bot.number, }\DecValTok{10}\NormalTok{, }\DataTypeTok{replace=}\NormalTok{T, }\DataTypeTok{prob =}\NormalTok{ old.gen}\OperatorTok{$}\NormalTok{fitness)}
+  \CommentTok{#next.generation <- c(1,1,1,1,4,5,6,3,3,4)}
+  
+\NormalTok{  next.bots.genomes<-}\StringTok{ }\NormalTok{old.genomes}
+  
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(next.generation)) \{}
+    \CommentTok{#print(i)}
+\NormalTok{    bot<-}\StringTok{ }\NormalTok{next.generation[[i]]}
+\NormalTok{    next.bots.genomes[i] <-}\StringTok{ }\NormalTok{old.genomes[bot]}
+\NormalTok{  \}}
+  \CommentTok{#next.bots.genomes <- old.genomes[next.generation]}
+  \KeywordTok{return}\NormalTok{(next.bots.genomes)}
+\NormalTok{\}}
+
+\CommentTok{#r<-nrow(weights)}
+  
+\CommentTok{# r<- as.numeric(sample(r, 1))}
+
+
+\NormalTok{  w<-}\KeywordTok{makeRandWeights}\NormalTok{()}
+\NormalTok{  weight.options<-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{, }\FloatTok{-.5}\NormalTok{, }\DecValTok{0}\NormalTok{, }\FloatTok{.5}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{ w[}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{] <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{sample}\NormalTok{(weight.options, }\DecValTok{1}\NormalTok{))}
+\NormalTok{ w}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3] [,4]
+## [1,] -0.5  1.0 -0.5 -0.5
+## [2,] -1.0  1.0  0.0  0.5
+## [3,] -0.5  1.0  0.5 -1.0
+## [4,] -1.0 -0.5  0.5 -1.0
+## [5,]  1.0 -0.5 -0.5  0.0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mutate <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(weights)\{}
+ 
+   
+\NormalTok{  new.weights <-}\StringTok{ }\NormalTok{weights}
+  
+\NormalTok{  weight.options<-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{, }\FloatTok{-.5}\NormalTok{, }\DecValTok{0}\NormalTok{, }\FloatTok{.5}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+  \CommentTok{#i<- sample(length(weights), 1)}
+  \CommentTok{#dim(weights)}
+  
+\NormalTok{  r<-}\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{nrow}\NormalTok{(weights))}
+\NormalTok{  c<-}\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{ncol}\NormalTok{(weights))}
+  
+\NormalTok{  r.m<-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{sample}\NormalTok{(r, }\DecValTok{1}\NormalTok{))}
+\NormalTok{  c.m<-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{sample}\NormalTok{(c, }\DecValTok{1}\NormalTok{))}
+
+  \CommentTok{#print(new.weights)}
+  \CommentTok{#print(new.weights[r.m, c.m])}
+\NormalTok{  new.weights[r.m, c.m] <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{sample}\NormalTok{(weight.options, }\DecValTok{1}\NormalTok{))}
+  
+  \CommentTok{#print(new.weights)}
+  \KeywordTok{return}\NormalTok{(new.weights)}
+\NormalTok{\}}
+
+  
+  \CommentTok{#new.weights <- rnorm(length(weights), mean=weights, sd=0.05)}
+  \CommentTok{#10% mutation, change weights}
+
+\CommentTok{#skip that do a loop change one}
+
+\CommentTok{#for loop, 1 to total gens, does all steps}
+
+\CommentTok{#mutates genomes}
+\CommentTok{# for (i in 1:length(next.bots))\{}
+\CommentTok{#    next.bots[[i]] <- mutate(next.bots[[i]])}
+\CommentTok{# \}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# run<- function(x)\{}
+\CommentTok{#   #x<-1}
+\CommentTok{#   genomes<- createGeneration(N.bots)}
+\CommentTok{#   gen<- runGeneration(genomes, x)}
+\CommentTok{# }
+\CommentTok{#   for (a in 2:N.gen) \{}
+\CommentTok{#    print(a)}
+\CommentTok{#     if(a == N.gen)\{}
+\CommentTok{#       #plotState <<- T}
+\CommentTok{#     \} else \{}
+\CommentTok{#       plotState <<- F}
+\CommentTok{#     \}}
+\CommentTok{#     genomes<- next.genomes(gen, genomes)}
+\CommentTok{#      for (i in 1:length(genomes)) \{}
+\CommentTok{#        #print(genomes[i])}
+\CommentTok{#        #i<-1}
+\CommentTok{#       genomes[[i]]<- mutate(genomes[[i]])}
+\CommentTok{#       #print(genomes[i])}
+\CommentTok{#     \}}
+\CommentTok{#     gen <- runGeneration(genomes, x)}
+\CommentTok{# }
+\CommentTok{#   \}}
+\CommentTok{# }
+\CommentTok{#   top.scorer <- as.numeric(which.max(gen$fitness))}
+\CommentTok{#   }
+\CommentTok{#   }
+\CommentTok{#   final.weights<-genomes[[top.scorer]]}
+\CommentTok{#   return(final.weights)}
+\CommentTok{# \}}
+
+\NormalTok{run<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x)\{}
+  \CommentTok{#x<-1}
+\NormalTok{  genomes<-}\StringTok{ }\KeywordTok{createGeneration}\NormalTok{(N.bots)}
+\NormalTok{  gen<-}\StringTok{ }\KeywordTok{runGeneration}\NormalTok{(genomes, x)}
+
+\NormalTok{  gen.history <-}\StringTok{ }\NormalTok{gen}
+\NormalTok{  gen.history}\OperatorTok{$}\NormalTok{generation <-}\StringTok{ }\DecValTok{1}
+  
+  \ControlFlowTok{for}\NormalTok{ (a }\ControlFlowTok{in} \DecValTok{2}\OperatorTok{:}\NormalTok{N.gen) \{}
+   \KeywordTok{print}\NormalTok{(a)}
+    \ControlFlowTok{if}\NormalTok{(a }\OperatorTok{==}\StringTok{ }\NormalTok{N.gen}\DecValTok{-1}\NormalTok{)\{}
+\NormalTok{       plotState <-}\StringTok{ }\NormalTok{T}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{      plotState <-}\StringTok{ }\NormalTok{F}
+\NormalTok{    \}}
+\NormalTok{    genomes<-}\StringTok{ }\KeywordTok{next.genomes}\NormalTok{(gen, genomes)}
+     \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(genomes)) \{}
+       \CommentTok{#print(genomes[i])}
+       \CommentTok{#i<-1}
+\NormalTok{      genomes[[i]]<-}\StringTok{ }\KeywordTok{mutate}\NormalTok{(genomes[[i]])}
+      \CommentTok{#print(genomes[i])}
+\NormalTok{    \}}
+\NormalTok{    gen <-}\StringTok{ }\KeywordTok{runGeneration}\NormalTok{(genomes, x)}
+\NormalTok{    gen.copy <-}\StringTok{ }\NormalTok{gen}
+\NormalTok{    gen.copy}\OperatorTok{$}\NormalTok{generation <-}\StringTok{ }\NormalTok{a}
+\NormalTok{    gen.history <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(gen.history, gen.copy)}
+
+\NormalTok{  \}}
+
+\NormalTok{  top.scorer <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{which.max}\NormalTok{(gen}\OperatorTok{$}\NormalTok{fitness))}
+\NormalTok{  final.weights<-genomes[[top.scorer]]}
+  \KeywordTok{return}\NormalTok{(}\KeywordTok{list}\NormalTok{(}\DataTypeTok{best.agent.weights =}\NormalTok{ final.weights, }\DataTypeTok{gen.history=}\NormalTok{gen.history))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Attempt to Plot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gridBotANN.PlotState <-}\ControlFlowTok{function}\NormalTok{(state)\{}
+\NormalTok{    gridVisPlot<-state[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{    df<-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{which}\NormalTok{(gridVisPlot }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{arr.ind =}\NormalTok{ T))}
+\NormalTok{    df}\OperatorTok{$}\NormalTok{type <-}\StringTok{ }\DecValTok{1}
+\NormalTok{    df2<-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{which}\NormalTok{(gridVisPlot }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\DataTypeTok{arr.ind =}\NormalTok{ T))}
+\NormalTok{    df2}\OperatorTok{$}\NormalTok{type <-}\StringTok{ }\DecValTok{0}
+\NormalTok{    df.all<-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(df, df2)}
+\NormalTok{    df.all}\OperatorTok{$}\NormalTok{type <-}\StringTok{ }\KeywordTok{factor}\NormalTok{(df.all}\OperatorTok{$}\NormalTok{type)}
+\NormalTok{    p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(df.all, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{col, }\DataTypeTok{y=}\NormalTok{row, }\DataTypeTok{shape =}\NormalTok{ type))}\OperatorTok{+}
+\StringTok{      }\KeywordTok{scale_shape_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\DecValTok{21}\NormalTok{,}\DecValTok{22}\NormalTok{), }\DataTypeTok{guide=}\NormalTok{F)}\OperatorTok{+}
+\StringTok{      }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{size=}\DecValTok{5}\NormalTok{)}\OperatorTok{+}
+\StringTok{      }\KeywordTok{scale_y_reverse}\NormalTok{()}\OperatorTok{+}
+\StringTok{      }\KeywordTok{theme_minimal}\NormalTok{()}\OperatorTok{+}
+\StringTok{      }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text =} \KeywordTok{element_blank}\NormalTok{(),}
+            \DataTypeTok{panel.grid=}\KeywordTok{element_blank}\NormalTok{(),}
+            \DataTypeTok{axis.title=} \KeywordTok{element_blank}\NormalTok{())}
+    \KeywordTok{return}\NormalTok{(p)}
+\NormalTok{    \}}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

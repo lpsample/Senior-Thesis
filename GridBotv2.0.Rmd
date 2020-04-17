@@ -1,6 +1,8 @@
 ---
 title: "GridBot Model"
-output: html_notebook
+output:
+  html_notebook: default
+  pdf_document: default
 ---
 #GridBot
 ##Lindsey Sample and Josh DeLeew, 2019
@@ -33,46 +35,43 @@ makeLightGrid<- function(numRows, numCols){
 
 #takes in 1 or 2 (static or dynamic)
 makeGrids<- function(x){
+  #if static, 10x10
   if (x == 1){
     numRows <- 10
     numCols <- 10
   }
-  
+  #if dynamic, pick from dynamic nums list
   if (x==2){
     d<- dynamicNums()
   numRows <- d[1]
   numCols <- d[2]
   }
-  
+  #make light grid with appropriate dimesions, add barriers along edges
   lightGrid<- makeLightGrid(numRows, numCols)
   obsGrid<- matrix(NA, numRows, numCols)
   obsGrid[1,]<- 1
   obsGrid[,1]<- 1
   obsGrid[numRows,]<- 1
   obsGrid[,numCols] <-1
-  
-  
-  if( x==1){
+  #if static, plus barrier in center
+  if(x==1){
     obsGrid[round(numRows/2), round(numCols/2)]<- 1
     obsGrid[round(numRows/2)+1, round(numCols/2)]<- 1
     obsGrid[round(numRows/2), round(numCols/2)+1]<- 1
     obsGrid[round(numRows/2)-1, round(numCols/2)]<- 1
     obsGrid[round(numRows/2), round(numCols/2)-1]<- 1
-
   } 
+  #if dynamic, placing 5 obstacles randomly
   if (x==2){
-    #placing 5 obstacles randomly
     for(i in 1:6){
     r<- sample(numRows-1, 1)
     c<- sample(numCols-1, 1)
     obsGrid[r, c]<- 1
     }
   }
-    
-    
+  #place bot in spot right above barrier in center (rounded to avoid decimal problems)
     obsGrid[numRows-1, round(numCols/2)]<- 0
     return(list(obsGrid, lightGrid))
-  
 }
 #gets random numbers that make a 100 square grid
 dynamicNums<-function(){

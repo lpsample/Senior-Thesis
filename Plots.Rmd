@@ -225,6 +225,8 @@ neat.static.cor<- cor(neat.static$generation, neat.static$meanFitness)
 
 neat.dynamic.cor<- cor(neat.dynamic$generation, neat.dynamic$meanFitness)
 
+#=====================================================
+
 #fixed topology
 ft.t.mean <- t.test(ann.dynamic$meanFitness, ann.static$meanFitness, alternative = "less")
 ft.t.mean
@@ -232,7 +234,31 @@ ft.t.mean
 ann.static$range<- ann.static$maxFitness-ann.static$minFitness
 ann.dynamic$range<- ann.dynamic$maxFitness-ann.dynamic$minFitness
 
-ft.t.range<- t.test(ann.dynamic$range, ann.static$range, alternative="two.sided")
+ft.t.range<- t.test(ann.dynamic$range, ann.static$range, alternative="greater")
 ft.t.range
+
+ft.static.cor<- cor(ann.static$generation, ann.static$meanFitness)
+ft.dynamic.cor<- cor(ann.dynamic$generation, ann.dynamic$meanFitness)
+#=====================================================
+#NEAT v FT
+
+comp.t.static<- t.test(neat.static$meanFitness, ann.static$meanFitness, alternative = "greater")
+comp.t.static
+
+comp.t.dynamic<- t.test(neat.dynamic$meanFitness, ann.dynamic$meanFitness, alternative = "greater")
+comp.t.dynamic
+
+#=====================================================
+#500
+
+ft.500.t.mean <- t.test(ann.dynamic.500$meanFitness, ann.static.500$meanFitness, alternative = "two.sided")
+
+ft.500.t.mean
+
+ft.500.static.cor<- cor(ann.static.500$generation, ann.static.500$meanFitness)
+ft.500.dynamic.cor<- cor(ann.dynamic.500$generation, ann.dynamic.500$meanFitness)
+
+?anova
+?lm
 
 ```
